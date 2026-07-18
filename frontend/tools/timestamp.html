@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>时间戳转换 - 工具集平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page">
+    <nav class="top-nav"><a href="../index.html">← 返回工具集</a></nav>
+    <header class="header">
+      <h1>时间戳转换</h1>
+      <p>秒 / 毫秒时间戳与日期互转</p>
+    </header>
+
+    <section class="card ts-card">
+      <div class="ts-now">
+        <span>现在：<strong id="nowTs">-</strong></span>
+        <button type="button" class="ghost ts-toggle" id="toggleNow">控制：停止</button>
+      </div>
+
+      <div class="ts-row">
+        <span class="ts-label">时间戳</span>
+        <input id="tsInput" type="text" class="ts-input" placeholder="输入时间戳" />
+        <select id="tsUnit" class="ts-unit" aria-label="时间戳单位">
+          <option value="s" selected>秒(s)</option>
+          <option value="ms">毫秒(ms)</option>
+        </select>
+        <button type="button" class="primary ts-btn" id="tsToDate">转换</button>
+        <input id="dateResult" type="text" class="ts-output" readonly placeholder="转换结果" />
+        <span class="ts-suffix">（北京时间）</span>
+      </div>
+
+      <div class="ts-row">
+        <span class="ts-label">时间</span>
+        <input id="dateInput" type="text" class="ts-input" placeholder="yyyy-MM-dd HH:mm:ss" />
+        <span class="ts-suffix">（北京时间）</span>
+        <button type="button" class="primary ts-btn" id="dateToTs">转换</button>
+        <input id="tsResult" type="text" class="ts-output" readonly placeholder="转换结果" />
+        <select id="dateUnit" class="ts-unit" aria-label="结果单位">
+          <option value="s" selected>秒(s)</option>
+          <option value="ms">毫秒(ms)</option>
+        </select>
+      </div>
+
+      <p class="status" id="status"></p>
+    </section>
+  </main>
+  <script src="./timestamp.js"></script>
+</body>
+</html>

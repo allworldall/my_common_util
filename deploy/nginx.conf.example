@@ -1,0 +1,34 @@
+# 线上 Nginx 示例：托管前端静态资源，并把 /api 反代到 Spring Boot
+#
+# 使用前请改：
+# 1) root 指向本仓库 frontend 目录的实际路径（或你发布后的静态目录）
+# 2) server_name 改成你的域名
+# 3) proxy_pass 改成后端实际地址/端口
+
+server {
+    listen 80;
+    server_name tools.example.com;
+
+    # 前端静态文件
+    root /var/www/my_common_util/frontend;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # 后端 API 反向代理
+    location /api/ {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # 上传 PDF 需要更大的 body
+        client_max_body_size 52m;
+
+        # 下载文件名等响应头透传
+        proxy_pass_header Content-Disposition;
+    }
+}

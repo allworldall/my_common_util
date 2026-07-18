@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>工具集平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/common.css" />
+  <script>
+    // 刷新后不要恢复到底部，始终从顶部开始
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+  </script>
+</head>
+<body class="home-body">
+  <div class="home-shell">
+    <header class="home-header">
+      <div class="home-title-block">
+        <div class="home-title-row">
+          <p class="brand">ToolKit</p>
+          <h1>工具集平台</h1>
+        </div>
+        <p class="home-sub">开发联调、办公处理常用小工具</p>
+      </div>
+    </header>
+
+    <div class="home-board" id="categoryList"></div>
+
+    <div class="home-footer">
+      <button type="button" class="feedback-entry" id="feedbackOpen">意见反馈</button>
+    </div>
+  </div>
+
+  <div class="modal" id="feedbackModal" hidden>
+    <div class="modal-panel feedback-panel">
+      <div id="feedbackFormView">
+        <h2>意见反馈</h2>
+        <p class="feedback-guide">
+          请简单描述您遇到的问题或使用建议，文字中间可直接粘贴截图，并留下任意联系方式
+          （微信 / 手机号 / 邮箱均可）。我们优化后会及时通知您，感谢支持！
+        </p>
+        <div class="field">
+          <span class="field-label">问题或建议</span>
+          <div
+            id="feedbackContent"
+            class="feedback-editor"
+            contenteditable="true"
+            role="textbox"
+            aria-multiline="true"
+            data-placeholder="例如：某个工具使用不便、希望新增某某功能…（可文字描述+粘贴截图）"
+          ></div>
+        </div>
+        <label class="field">
+          <span>您的联系方式</span>
+          <input id="feedbackContact" type="text" placeholder="微信 / 手机号 / 邮箱" />
+        </label>
+        <p class="status" id="feedbackStatus"></p>
+        <div class="modal-actions">
+          <button type="button" class="primary" id="feedbackSubmit">提交反馈</button>
+          <button type="button" class="ghost" id="feedbackCancel">取消</button>
+        </div>
+      </div>
+
+      <div id="feedbackSuccessView" hidden>
+        <h2>感谢您的反馈！</h2>
+        <p class="feedback-guide">
+          我们已收到您的反馈，会尽快查看处理；有进展时会通过您留下的方式联系您。
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="primary" id="feedbackDone">我知道了</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/api-config.js"></script>
+  <script src="./js/tools-config.js"></script>
+  <script src="./js/home.js"></script>
+  <script src="./js/feedback.js"></script>
+</body>
+</html>

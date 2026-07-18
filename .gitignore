@@ -1,0 +1,84 @@
+# =========================
+# 需要提交到 GitHub 的内容（不要 ignore）
+# =========================
+# - src/                 后端源码与配置
+# - frontend/            前端页面与脚本
+# - deploy/              Nginx 等部署示例
+# - pom.xml              Maven 依赖
+# - mvnw / mvnw.cmd      Maven Wrapper 脚本
+# - .mvn/wrapper/*.properties
+# - .gitignore / .gitattributes
+# - README / HELP 等文档（如有）
+
+# =========================
+# 不需要提交（下面这些会被忽略）
+# =========================
+
+# 编译产物
+target/
+build/
+*.class
+*.jar
+*.war
+*.ear
+!mvnw
+!mvnw.cmd
+
+# Maven Wrapper 的 jar（体积大，可本地自动下载）
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE / 编辑器
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+
+# Eclipse / STS / NetBeans
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 日志与临时文件
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+*.bak
+
+# 本地敏感配置（如有自行创建，勿提交密钥）
+.env
+.env.*
+!.env.example
+application-local.yaml
+application-local.yml
+**/application-local.yaml
+**/application-local.yml
+
+# 前端本地缓存（如果以后用了 npm）
+node_modules/
+dist/
+.npm/
+.cache/
+
+# 测试/覆盖率报告
+coverage/
+*.lcov

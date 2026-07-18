@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JSON工具 - 工具集平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page">
+    <nav class="top-nav"><a href="../index.html">← 返回工具集</a></nav>
+    <header class="header">
+      <h1>JSON工具</h1>
+      <p>校验、格式化、压缩、转义 / 去转义，全部在本地浏览器处理</p>
+    </header>
+
+    <section class="card">
+      <div class="btn-row">
+        <button type="button" class="primary" id="btnFormat">格式化</button>
+        <button type="button" class="secondary" id="btnCompress">压缩</button>
+        <button type="button" class="secondary" id="btnValidate">校验</button>
+        <button type="button" class="secondary" id="btnEscape">转义</button>
+        <button type="button" class="secondary" id="btnUnescape">去转义</button>
+        <button type="button" class="secondary" id="btnCopy">复制</button>
+        <button type="button" class="ghost" id="btnClear">清空</button>
+      </div>
+
+      <div class="split-panes">
+        <label class="field">
+          <span>输入</span>
+          <textarea id="input" placeholder='粘贴 JSON，例如 {"name":"demo"}'></textarea>
+        </label>
+        <label class="field">
+          <span>输出</span>
+          <textarea id="output" placeholder="结果会显示在这里" readonly></textarea>
+        </label>
+      </div>
+
+      <p class="status" id="status"></p>
+      <p class="note">提示：转义会把 JSON 变成可嵌入字符串的形式；去转义则反向还原。</p>
+    </section>
+  </main>
+  <script src="./json.js"></script>
+</body>
+</html>

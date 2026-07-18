@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF拆分 - 工具集平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page narrow">
+    <nav class="top-nav">
+      <a href="../index.html">← 返回工具集</a>
+    </nav>
+
+    <header class="header">
+      <h1>PDF拆分</h1>
+      <p>上传 PDF，选择页码范围，拆分后保存到本地</p>
+    </header>
+
+    <section class="card">
+      <div class="upload-zone" id="uploadZone">
+        <input id="fileInput" type="file" accept="application/pdf,.pdf" hidden />
+        <p class="upload-title">点击或拖拽 PDF 到此处</p>
+        <p class="upload-hint" id="fileHint">支持最大 50M</p>
+      </div>
+
+      <div class="meta" id="fileMeta" hidden>
+        <span id="metaName">-</span>
+        <span id="metaPages">总页数：-</span>
+        <span id="metaSize">大小：-</span>
+      </div>
+
+      <div class="range-row">
+        <label class="field">
+          <span>起始页</span>
+          <input id="startPage" type="number" min="1" value="1" />
+        </label>
+        <label class="field">
+          <span>结束页</span>
+          <input id="endPage" type="number" min="1" value="1" />
+        </label>
+      </div>
+
+      <button id="splitBtn" class="primary" type="button" disabled>拆分并下载</button>
+      <p class="status" id="status"></p>
+    </section>
+  </main>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-panel">
+      <h2>保存拆分结果</h2>
+      <p id="modalDesc">文件已生成，请选择保存位置。</p>
+      <div class="modal-actions">
+        <button id="saveAsBtn" class="primary" type="button">选择位置保存</button>
+        <button id="downloadBtn" class="secondary" type="button">浏览器下载</button>
+        <button id="cancelBtn" class="ghost" type="button">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api-config.js"></script>
+  <script src="./pdf-split.js"></script>
+</body>
+</html>

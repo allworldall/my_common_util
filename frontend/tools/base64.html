@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base64 - 工具集平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page">
+    <nav class="top-nav"><a href="../index.html">← 返回工具集</a></nav>
+    <header class="header">
+      <h1>Base64</h1>
+      <p>文本 Base64 编码 / 解码，本地处理</p>
+    </header>
+    <section class="card">
+      <div class="btn-row">
+        <button type="button" class="primary" id="btnEncode">编码</button>
+        <button type="button" class="secondary" id="btnDecode">解码</button>
+        <button type="button" class="secondary" id="btnCopy">复制结果</button>
+        <button type="button" class="ghost" id="btnClear">清空</button>
+      </div>
+      <div class="split-panes">
+        <label class="field"><span>输入</span><textarea id="input" placeholder="输入文本"></textarea></label>
+        <label class="field"><span>输出</span><textarea id="output" readonly></textarea></label>
+      </div>
+      <p class="status" id="status"></p>
+    </section>
+  </main>
+  <script src="./base64.js"></script>
+</body>
+</html>

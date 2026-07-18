@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>图片处理 - 工具集平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page">
+    <nav class="top-nav"><a href="../index.html">← 返回工具集</a></nav>
+    <header class="header">
+      <h1>图片处理</h1>
+      <p>本地改尺寸、压大小，图片不会上传到服务器</p>
+    </header>
+
+    <section class="card">
+      <div class="upload-zone" id="uploadZone">
+        <input id="fileInput" type="file" accept="image/*" hidden />
+        <p class="upload-title">点击或拖拽图片到此处</p>
+        <p class="upload-hint" id="fileHint">支持 JPG / PNG / WEBP</p>
+      </div>
+
+      <div class="meta" id="fileMeta" hidden>
+        <span id="metaName">-</span>
+        <span id="metaOrigin">原图：-</span>
+      </div>
+
+      <div class="form-row-3">
+        <label class="field">
+          <span>目标宽度 (px)</span>
+          <input id="width" type="number" min="1" placeholder="如 100" />
+        </label>
+        <label class="field">
+          <span>目标高度 (px)</span>
+          <input id="height" type="number" min="1" placeholder="如 100" />
+        </label>
+        <label class="field">
+          <span>锁定比例</span>
+          <select id="keepRatio">
+            <option value="1" selected>是</option>
+            <option value="0">否</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="form-row">
+        <label class="field">
+          <span>目标大小上限 (KB)</span>
+          <input id="maxKb" type="number" min="10" max="1024" value="200" />
+        </label>
+        <label class="field">
+          <span>输出格式</span>
+          <select id="format">
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/png">PNG</option>
+            <option value="image/webp">WEBP</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="primary" id="processBtn" disabled>开始处理</button>
+        <button type="button" class="secondary" id="downloadBtn" disabled>下载结果</button>
+      </div>
+
+      <div class="split-panes">
+        <div>
+          <p class="field-label">原图预览</p>
+          <div class="preview-box"><img id="originPreview" alt="" hidden /></div>
+        </div>
+        <div>
+          <p class="field-label">处理结果</p>
+          <div class="preview-box"><img id="resultPreview" alt="" hidden /></div>
+        </div>
+      </div>
+
+      <p class="status" id="status"></p>
+      <p class="note">1M=1024KB</p>
+    </section>
+  </main>
+  <script src="./image.js"></script>
+</body>
+</html>

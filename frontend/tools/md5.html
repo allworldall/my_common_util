@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MD5摘要 - 工具集平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page">
+    <nav class="top-nav"><a href="../index.html">← 返回工具集</a></nav>
+    <header class="header">
+      <h1>MD5摘要</h1>
+      <p>计算文本或文件的 MD5，全部在本地完成</p>
+    </header>
+
+    <section class="card">
+      <div class="btn-row">
+        <button type="button" class="primary" id="btnText">计算文本 MD5</button>
+        <button type="button" class="secondary" id="btnCopy">复制结果</button>
+        <button type="button" class="ghost" id="btnClear">清空</button>
+      </div>
+
+      <label class="field">
+        <span>文本内容</span>
+        <textarea id="input" placeholder="输入要计算的文本"></textarea>
+      </label>
+
+      <div class="upload-zone" id="uploadZone">
+        <input id="fileInput" type="file" hidden />
+        <p class="upload-title">或点击 / 拖拽文件计算 MD5</p>
+        <p class="upload-hint" id="fileHint">适合校验下载文件是否完整</p>
+      </div>
+
+      <div class="form-row">
+        <label class="field">
+          <span>字母大小写</span>
+          <select id="caseMode">
+            <option value="lower" selected>小写</option>
+            <option value="upper">大写</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>MD5 结果</span>
+          <input id="output" type="text" readonly placeholder="计算结果" />
+        </label>
+      </div>
+
+      <p class="status" id="status"></p>
+    </section>
+  </main>
+  <script src="./md5.js"></script>
+</body>
+</html>

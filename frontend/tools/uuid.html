@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UUID生成 - 工具集平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page narrow">
+    <nav class="top-nav"><a href="../index.html">← 返回工具集</a></nav>
+    <header class="header">
+      <h1>UUID生成</h1>
+      <p>批量生成 UUID v4，方便造测试数据</p>
+    </header>
+    <section class="card">
+      <div class="form-row">
+        <label class="field">
+          <span>生成数量</span>
+          <input id="count" type="number" min="1" max="200" value="5" />
+        </label>
+        <label class="field">
+          <span>是否大写</span>
+          <select id="upper">
+            <option value="0" selected>小写</option>
+            <option value="1">大写</option>
+          </select>
+        </label>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="primary" id="btnGen">生成</button>
+        <button type="button" class="secondary" id="btnCopy">复制全部</button>
+        <button type="button" class="ghost" id="btnClear">清空</button>
+      </div>
+      <textarea id="output" readonly placeholder="生成结果"></textarea>
+      <p class="status" id="status"></p>
+    </section>
+  </main>
+  <script src="./uuid.js"></script>
+</body>
+</html>

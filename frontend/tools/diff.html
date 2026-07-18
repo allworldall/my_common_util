@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>文本Diff - 工具集平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page">
+    <nav class="top-nav"><a href="../index.html">← 返回工具集</a></nav>
+    <header class="header">
+      <h1>文本Diff</h1>
+      <p>按行对比两段文本差异，本地完成</p>
+    </header>
+
+    <section class="card">
+      <div class="btn-row">
+        <button type="button" class="primary" id="btnDiff">开始对比</button>
+        <button type="button" class="secondary" id="btnSwap">左右互换</button>
+        <button type="button" class="ghost" id="btnClear">清空</button>
+      </div>
+
+      <div class="split-panes">
+        <label class="field">
+          <span>原文（左侧）</span>
+          <textarea id="left" placeholder="粘贴原文"></textarea>
+        </label>
+        <label class="field">
+          <span>对比文（右侧）</span>
+          <textarea id="right" placeholder="粘贴对比文本"></textarea>
+        </label>
+      </div>
+
+      <p class="status" id="status"></p>
+      <p class="note">绿色：新增　红色：删除　灰色：未变化</p>
+      <div class="diff-result" id="diffResult"></div>
+    </section>
+  </main>
+  <script src="./diff.js"></script>
+</body>
+</html>
