@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.my_common_util.service.FeedbackService;
 import com.example.my_common_util.web.dto.FeedbackRequest;
+import com.example.my_common_util.web.dto.ToolRequestPayload;
 
 @RestController
 @RequestMapping("/api/feedback")
@@ -26,6 +28,15 @@ public class FeedbackController {
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
         result.put("message", "感谢您的反馈，我们已收到！");
+        return result;
+    }
+
+    @PostMapping("/tool-request")
+    public Map<String, Object> submitToolRequest(@RequestBody ToolRequestPayload request) {
+        feedbackService.sendToolRequest(request);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "感谢您的建议，我们已收到！");
         return result;
     }
 }

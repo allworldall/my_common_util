@@ -5,18 +5,24 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.example.my_common_util.web.RateLimitInterceptor;
+import com.example.my_common_util.web.AccessLogInterceptor;
 import com.example.my_common_util.web.ApiTokenInterceptor;
+import com.example.my_common_util.web.RateLimitInterceptor;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     private final RateLimitInterceptor rateLimitInterceptor;
     private final ApiTokenInterceptor apiTokenInterceptor;
+    private final AccessLogInterceptor accessLogInterceptor;
 
-    public WebConfig(RateLimitInterceptor rateLimitInterceptor, ApiTokenInterceptor apiTokenInterceptor) {
+    public WebConfig(
+            RateLimitInterceptor rateLimitInterceptor,
+            ApiTokenInterceptor apiTokenInterceptor,
+            AccessLogInterceptor accessLogInterceptor) {
         this.rateLimitInterceptor = rateLimitInterceptor;
         this.apiTokenInterceptor = apiTokenInterceptor;
+        this.accessLogInterceptor = accessLogInterceptor;
     }
 
     @Override
@@ -32,6 +38,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(accessLogInterceptor)
+                .addPathPatterns("/api/**");
         registry.addInterceptor(apiTokenInterceptor)
                 .addPathPatterns("/api/pdf/**");
         registry.addInterceptor(rateLimitInterceptor)

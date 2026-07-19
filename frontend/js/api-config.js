@@ -10,6 +10,9 @@ window.APP_CONFIG = {
   apiToken: "",
   /** PDF 上传大小上限（字节），需与后端 pdf.split.max-file-size-bytes 保持一致 */
   pdfMaxFileSizeBytes: 50 * 1024 * 1024,
+  /** 图片扫描：单张上限 / 最多张数，需与后端 pdf.scan.* 保持一致 */
+  scanMaxFileSizeBytes: 8 * 1024 * 1024,
+  scanMaxImages: 10,
 };
 
 (function resolveApiBase() {

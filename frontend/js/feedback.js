@@ -225,11 +225,99 @@
     return `提交失败(${response.status})`;
   }
 
+  // —— 工具需求弹窗 ——
+  const toolModal = $("toolRequestModal");
+  const toolFormView = $("toolRequestFormView");
+  const toolSuccessView = $("toolRequestSuccessView");
+  const toolScenario = $("toolRequestScenario");
+  const toolUsage = $("toolRequestUsage");
+  const toolContact = $("toolRequestContact");
+  const toolStatus = $("toolRequestStatus");
+  const toolSubmitBtn = $("toolRequestSubmit");
+
+  function setToolStatus(text, type = "") {
+    toolStatus.textContent = text || "";
+    toolStatus.className = "status" + (type ? ` ${type}` : "");
+  }
+
+  function showToolForm() {
+    toolFormView.hidden = false;
+    toolSuccessView.hidden = true;
+    setToolStatus("");
+  }
+
+  function showToolSuccess() {
+    toolFormView.hidden = true;
+    toolSuccessView.hidden = false;
+  }
+
+  function openToolModal() {
+    showToolForm();
+    toolModal.hidden = false;
+  }
+
+  function closeToolModal() {
+    toolModal.hidden = true;
+    toolScenario.value = "";
+    toolUsage.value = "";
+    toolContact.value = "";
+    toolSubmitBtn.disabled = false;
+    showToolForm();
+  }
+
   $("feedbackOpen").addEventListener("click", openModal);
   $("feedbackCancel").addEventListener("click", closeModal);
   $("feedbackDone").addEventListener("click", closeModal);
   modal.addEventListener("click", (e) => {
     if (e.target === modal) closeModal();
+  });
+
+  $("toolRequestOpen").addEventListener("click", openToolModal);
+  $("toolRequestCancel").addEventListener("click", closeToolModal);
+  $("toolRequestDone").addEventListener("click", closeToolModal);
+  toolModal.addEventListener("click", (e) => {
+    if (e.target === toolModal) closeToolModal();
+  });
+
+  toolSubmitBtn.addEventListener("click", async () => {
+    const scenario = toolScenario.value.trim();
+    const usage = toolUsage.value.trim();
+    const contact = toolContact.value.trim();
+
+    if (!scenario) {
+      setToolStatus("请描述工具的使用场景", "error");
+      return;
+    }
+    if (!usage) {
+      setToolStatus("请描述大概的使用方式", "error");
+      return;
+    }
+    if (!contact) {
+      setToolStatus("请留下联系方式，方便我们进一步沟通", "error");
+      return;
+    }
+
+    toolSubmitBtn.disabled = true;
+    setToolStatus("正在提交，请稍候…");
+
+    try {
+      const res = await fetch(apiUrl("/api/feedback/tool-request"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scenario, usage, contact }),
+      });
+      if (!res.ok) {
+        throw new Error(await parseError(res));
+      }
+      const data = await res.json();
+      if (data && data.success === false) {
+        throw new Error(data.message || "提交失败");
+      }
+      showToolSuccess();
+    } catch (err) {
+      setToolStatus(err.message || "提交失败，请稍后重试", "error");
+      toolSubmitBtn.disabled = false;
+    }
   });
 
   contentEditor.addEventListener("input", syncPlaceholder);
@@ -264,7 +352,7 @@
     const contact = contactInput.value.trim();
 
     if (!content && images.length === 0) {
-      setStatus("请先填写问题或建议", "error");
+      setStatus("请先填写问题描述", "error");
       return;
     }
     if (!content) {
