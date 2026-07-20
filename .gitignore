@@ -73,6 +73,11 @@ application-local.yml
 **/application-local.yaml
 **/application-local.yml
 
+# 部署目标机配置（含主机地址等，勿提交）
+deploy/deploy.env
+deploy/deploy.env.*
+!deploy/deploy.env.example
+
 # 前端本地缓存（如果以后用了 npm）
 node_modules/
 dist/
