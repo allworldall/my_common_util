@@ -379,6 +379,79 @@ textarea {
   gap: 8px;
 }
 
+/* 列表转换：快捷场景 + 勾选项 */
+.preset-block {
+  display: grid;
+  gap: 8px;
+}
+
+.preset-label {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preset {
+  background: #eef3fa;
+  color: var(--ink);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 0.88rem;
+  line-height: 1.2;
+}
+
+.preset:hover {
+  background: #e3ecf8;
+  border-color: #c5d6ef;
+}
+
+.preset.is-active {
+  background: #e8f1ff;
+  color: var(--accent-dark);
+  border-color: #9dbcf5;
+  font-weight: 600;
+}
+
+.check-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.92rem;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+}
+
+.check input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.note kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--soft);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82em;
+  line-height: 1.3;
+}
+
 button,
 .btn {
   border: none;
@@ -595,11 +668,6 @@ button:disabled {
 .feedback-entry:hover {
   border-color: #9dbcf5;
   background: #edf4ff;
-}
-
-.feedback-entry-secondary {
-  color: var(--ink);
-  font-weight: 550;
 }
 
 .feedback-panel {

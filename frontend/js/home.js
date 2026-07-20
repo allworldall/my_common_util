@@ -29,6 +29,8 @@
       <svg viewBox="0 0 64 64" width="36" height="36"><rect x="12" y="18" width="40" height="28" rx="8" fill="#e8f1ff" stroke="currentColor" stroke-width="2.2"/><path d="M20 32h24M28 26v12M36 26v12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`,
     diff: `
       <svg viewBox="0 0 64 64" width="36" height="36"><rect x="10" y="14" width="20" height="36" rx="4" fill="#e8f1ff" stroke="currentColor" stroke-width="2"/><rect x="34" y="14" width="20" height="36" rx="4" fill="#fff" stroke="currentColor" stroke-width="2"/><path d="M16 26h8M16 34h8M40 26h8M40 34h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
+    "list-convert": `
+      <svg viewBox="0 0 64 64" width="36" height="36"><rect x="12" y="14" width="40" height="36" rx="8" fill="#e8f1ff" stroke="currentColor" stroke-width="2.2"/><path d="M22 26h8M22 32h14M22 38h10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M40 28l6 4-6 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   };
 
   function fallbackIcon() {

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>列表转换 - 工具集平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page">
+    <nav class="top-nav"><a href="../index.html">← 返回工具集</a></nav>
+    <header class="header">
+      <h1>列表转换</h1>
+      <p>单号、ID、SKU 等列表的分隔互转、去重、加引号，全部本地处理</p>
+    </header>
+
+    <section class="card">
+      <div class="preset-block">
+        <span class="preset-label">快捷场景</span>
+        <div class="preset-row" id="presets" aria-label="快捷场景">
+          <button type="button" class="preset" data-preset="lines-to-comma">换行 → 逗号</button>
+          <button type="button" class="preset" data-preset="comma-to-lines">逗号 → 换行</button>
+          <button type="button" class="preset" data-preset="lines-to-sql">换行 → SQL IN</button>
+          <button type="button" class="preset" data-preset="lines-to-json">换行 → JSON</button>
+          <button type="button" class="preset" data-preset="space-to-lines">空格 → 换行</button>
+          <button type="button" class="preset" data-preset="dunhao-to-lines">顿号 → 换行</button>
+          <button type="button" class="preset" data-preset="tab-to-lines">Tab → 换行</button>
+          <button type="button" class="preset" data-preset="lines-to-comma-space">换行 → 逗号空格</button>
+        </div>
+      </div>
+
+      <div class="form-row-3">
+        <label class="field">
+          <span>输入分隔</span>
+          <select id="inSep">
+            <option value="auto" selected>自动识别</option>
+            <option value="newline">换行</option>
+            <option value="comma">逗号 ,</option>
+            <option value="semicolon">分号 ;</option>
+            <option value="space">空格 / 空白</option>
+            <option value="tab">Tab</option>
+            <option value="pipe">竖线 |</option>
+            <option value="dunhao">顿号 、</option>
+            <option value="custom">自定义</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>输出分隔</span>
+          <select id="outSep">
+            <option value="newline">换行</option>
+            <option value="comma" selected>逗号 ,</option>
+            <option value="comma-space">逗号+空格 , </option>
+            <option value="semicolon">分号 ;</option>
+            <option value="space">空格</option>
+            <option value="tab">Tab</option>
+            <option value="pipe">竖线 |</option>
+            <option value="dunhao">顿号 、</option>
+            <option value="sql-in">SQL IN (...)</option>
+            <option value="json">JSON 数组</option>
+            <option value="custom">自定义</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>每项加引号</span>
+          <select id="quote">
+            <option value="none" selected>不加</option>
+            <option value="single">单引号 '</option>
+            <option value="double">双引号 "</option>
+            <option value="backtick">反引号 `</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="form-row custom-sep-row" id="customSepRow" hidden>
+        <label class="field">
+          <span>自定义输入分隔符</span>
+          <input id="inCustom" type="text" placeholder="例如：|| 或 /" />
+        </label>
+        <label class="field">
+          <span>自定义输出分隔符</span>
+          <input id="outCustom" type="text" placeholder="例如：|| 或 /" />
+        </label>
+      </div>
+
+      <div class="check-row">
+        <label class="check"><input type="checkbox" id="optTrim" checked /> 去首尾空格</label>
+        <label class="check"><input type="checkbox" id="optEmpty" checked /> 去空项</label>
+        <label class="check"><input type="checkbox" id="optStripQuote" /> 去掉原有引号</label>
+        <label class="check"><input type="checkbox" id="optDedupe" /> 去重</label>
+        <label class="check"><input type="checkbox" id="optSort" /> 排序</label>
+        <label class="check"><input type="checkbox" id="optReverse" /> 倒序</label>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="primary" id="btnConvert">转换</button>
+        <button type="button" class="secondary" id="btnSwap">交换输入输出</button>
+        <button type="button" class="secondary" id="btnCopy">复制结果</button>
+        <button type="button" class="ghost" id="btnClear">清空</button>
+      </div>
+
+      <div class="split-panes">
+        <label class="field">
+          <span>输入</span>
+          <textarea id="input" placeholder="粘贴列表，例如：&#10;ORD001&#10;ORD002&#10;ORD003"></textarea>
+        </label>
+        <label class="field">
+          <span>输出</span>
+          <textarea id="output" placeholder="转换结果会显示在这里" readonly></textarea>
+        </label>
+      </div>
+
+      <p class="status" id="status"></p>
+      <p class="note">
+        常见场景：Excel 导出单号 → 逗号给接口；拼 SQL <code>IN (...)</code>；
+        中文顿号列表拆开；空格/Tab 粘贴成一行一个。快捷场景一点即转，也可用下方选项细调。
+        快捷键：<kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd> 转换。
+      </p>
+    </section>
+  </main>
+  <script src="./list-convert.js"></script>
+</body>
+</html>
