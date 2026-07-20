@@ -1,0 +1,20 @@
+[Unit]
+Description=my_common_util
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/app/my_common_util
+# 邮件账号等环境变量；文件不存在也不影响启动（前面的 -）
+EnvironmentFile=-/etc/service_env/my_common_util
+Environment=APP_HOME=/var/app/my_common_util
+Environment=LOG_DIR=/var/app/my_common_util/logs
+# 与本地一致：统一走 start.sh（请把 deploy/start.sh 部署到该路径）
+ExecStart=/var/app/my_common_util/start.sh
+Restart=on-failure
+RestartSec=5
+PrivateTmp=false
+
+[Install]
+WantedBy=multi-user.target

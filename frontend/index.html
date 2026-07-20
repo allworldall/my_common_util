@@ -29,27 +29,28 @@
     <div class="home-board" id="categoryList"></div>
 
     <div class="home-footer">
-      <button type="button" class="feedback-entry" id="feedbackOpen">意见反馈</button>
+      <button type="button" class="feedback-entry" id="feedbackOpen">问题反馈</button>
+      <button type="button" class="feedback-entry" id="toolRequestOpen">您还需要哪些工具</button>
     </div>
   </div>
 
   <div class="modal" id="feedbackModal" hidden>
     <div class="modal-panel feedback-panel">
       <div id="feedbackFormView">
-        <h2>意见反馈</h2>
+        <h2>问题反馈</h2>
         <p class="feedback-guide">
-          请简单描述您遇到的问题或使用建议，文字中间可直接粘贴截图，并留下任意联系方式
+          请简单描述您遇到的问题，文字中间可直接粘贴截图，并留下任意联系方式
           （微信 / 手机号 / 邮箱均可）。我们优化后会及时通知您，感谢支持！
         </p>
         <div class="field">
-          <span class="field-label">问题或建议</span>
+          <span class="field-label">问题描述</span>
           <div
             id="feedbackContent"
             class="feedback-editor"
             contenteditable="true"
             role="textbox"
             aria-multiline="true"
-            data-placeholder="例如：某个工具使用不便、希望新增某某功能…（可文字描述+粘贴截图）"
+            data-placeholder="例如：某个工具报错、页面显示异常…（可文字描述+粘贴截图）"
           ></div>
         </div>
         <label class="field">
@@ -70,6 +71,52 @@
         </p>
         <div class="modal-actions">
           <button type="button" class="primary" id="feedbackDone">我知道了</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="toolRequestModal" hidden>
+    <div class="modal-panel feedback-panel">
+      <div id="toolRequestFormView">
+        <h2>您还需要哪些工具</h2>
+        <p class="feedback-guide">
+          告诉我们您期望的工具使用场景和大概用法，我们会优先评估并落地。
+        </p>
+        <label class="field">
+          <span>使用场景</span>
+          <textarea
+            id="toolRequestScenario"
+            rows="3"
+            placeholder="例如：经常需要把手机拍的合同照片整理成可归档的扫描件…"
+          ></textarea>
+        </label>
+        <label class="field">
+          <span>大概使用方式</span>
+          <textarea
+            id="toolRequestUsage"
+            rows="3"
+            placeholder="例如：上传多张照片 → 自动增强成扫描效果 → 导出一份 PDF…"
+          ></textarea>
+        </label>
+        <label class="field">
+          <span>您的联系方式</span>
+          <input id="toolRequestContact" type="text" placeholder="微信 / 手机号 / 邮箱" />
+        </label>
+        <p class="status" id="toolRequestStatus"></p>
+        <div class="modal-actions">
+          <button type="button" class="primary" id="toolRequestSubmit">提交建议</button>
+          <button type="button" class="ghost" id="toolRequestCancel">取消</button>
+        </div>
+      </div>
+
+      <div id="toolRequestSuccessView" hidden>
+        <h2>感谢您的建议！</h2>
+        <p class="feedback-guide">
+          我们已收到您的工具需求，会尽快评估；有进展时会通过您留下的方式联系您。
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="primary" id="toolRequestDone">我知道了</button>
         </div>
       </div>
     </div>

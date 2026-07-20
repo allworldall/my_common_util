@@ -22,6 +22,13 @@ window.TOOL_CATEGORIES = [
         href: "./tools/image.html",
         icon: "image",
       },
+      {
+        id: "image-scan",
+        name: "图片扫描",
+        desc: "照片转扫描件 PDF",
+        href: "./tools/image-scan.html",
+        icon: "image-scan",
+      },
     ],
   },
   {
@@ -69,7 +76,7 @@ window.TOOL_CATEGORIES = [
   {
     id: "text",
     name: "文本相关",
-    desc: "文本对比与生成",
+    desc: "文本对比、生成与列表处理",
     tools: [
       {
         id: "uuid",
@@ -84,6 +91,13 @@ window.TOOL_CATEGORIES = [
         desc: "对比两段文本差异",
         href: "./tools/diff.html",
         icon: "diff",
+      },
+      {
+        id: "list-convert",
+        name: "列表转换",
+        desc: "换行/逗号互转、SQL IN、去重",
+        href: "./tools/list-convert.html",
+        icon: "list-convert",
       },
     ],
   },

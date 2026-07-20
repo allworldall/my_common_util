@@ -41,7 +41,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
                 ? feedbackProperties.getRateLimitPerMinute()
                 : pdfProperties.getRateLimitPerMinute();
 
-        String clientIp = resolveClientIp(request);
+        String clientIp = ClientIpResolver.resolve(request);
         String key = path.startsWith("/api/feedback") ? "feedback:" + clientIp : "pdf:" + clientIp;
         long now = System.currentTimeMillis();
         WindowCounter counter = counters.compute(key, (k, existing) -> {
@@ -59,18 +59,6 @@ public class RateLimitInterceptor implements HandlerInterceptor {
             return false;
         }
         return true;
-    }
-
-    private String resolveClientIp(HttpServletRequest request) {
-        String xff = request.getHeader("X-Forwarded-For");
-        if (xff != null && !xff.isBlank()) {
-            return xff.split(",")[0].trim();
-        }
-        String realIp = request.getHeader("X-Real-IP");
-        if (realIp != null && !realIp.isBlank()) {
-            return realIp.trim();
-        }
-        return request.getRemoteAddr();
     }
 
     private static final class WindowCounter {
