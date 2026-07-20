@@ -1,0 +1,21 @@
+spring:
+  mail:
+    host: localhost
+    port: 25
+    username: test@example.com
+    password: test
+    properties:
+      mail:
+        smtp:
+          auth: false
+          ssl:
+            enable: false
+
+feedback:
+  enabled: false
+  to: test@example.com
+  rate-limit-per-minute: 100
+
+pdf:
+  split:
+    api-token: ""
