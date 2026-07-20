@@ -1,4 +1,4 @@
-package com.example.my_common_util.web;
+package com.example.my_common_util.service;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -9,6 +9,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -16,6 +18,7 @@ import org.springframework.util.StringUtils;
 import com.example.my_common_util.config.FeedbackProperties;
 import com.example.my_common_util.web.dto.FeedbackImagePayload;
 import com.example.my_common_util.web.dto.FeedbackRequest;
+import com.example.my_common_util.web.dto.ToolRequestPayload;
 
 import jakarta.activation.DataHandler;
 import jakarta.mail.Message;
@@ -29,7 +32,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 @Service
 public class FeedbackService {
 
+    private static final Logger log = LoggerFactory.getLogger(FeedbackService.class);
+
     private static final int MAX_CONTENT_LEN = 2000;
+    private static final int MAX_SCENARIO_LEN = 1000;
+    private static final int MAX_USAGE_LEN = 1000;
     private static final int MAX_CONTACT_LEN = 100;
     private static final int MAX_IMAGE_COUNT = 3;
     private static final int MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -58,22 +65,13 @@ public class FeedbackService {
     }
 
     public void sendFeedback(FeedbackRequest request) {
-        if (!feedbackProperties.isEnabled()) {
-            throw new IllegalStateException("意见反馈功能暂未开启");
-        }
-        if (!StringUtils.hasText(feedbackProperties.getTo())) {
-            throw new IllegalStateException("未配置反馈接收邮箱");
-        }
-        if (!StringUtils.hasText(mailUsername) || !StringUtils.hasText(mailPassword)) {
-            throw new IllegalStateException(
-                    "邮件未配置完成：请设置 spring.mail.username，并用环境变量 MAIL_AUTH_CODE 配置 QQ 邮箱授权码");
-        }
+        ensureMailReady("问题反馈");
 
         String trimmedContent = request.getContent() == null ? "" : request.getContent().trim();
         String trimmedContact = request.getContact() == null ? "" : request.getContact().trim();
 
         if (!StringUtils.hasText(trimmedContent)) {
-            throw new IllegalArgumentException("请填写问题或建议");
+            throw new IllegalArgumentException("请填写问题描述");
         }
         if (!StringUtils.hasText(trimmedContact)) {
             throw new IllegalArgumentException("请留下联系方式，方便我们优化后通知您");
@@ -98,16 +96,16 @@ public class FeedbackService {
             MimeMessage message = mailSender.createMimeMessage();
             message.setFrom(new InternetAddress(mailUsername));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(feedbackProperties.getTo()));
-            message.setSubject("【工具集平台】意见反馈", "UTF-8");
+            message.setSubject("【工具集平台】问题反馈", "UTF-8");
 
             if (images.isEmpty()) {
-                message.setText(buildPlainText(trimmedContent, trimmedContact, 0), "UTF-8");
+                message.setText(buildProblemPlainText(trimmedContent, trimmedContact, 0), "UTF-8");
             } else {
                 // multipart/related：HTML 正文 + 内嵌图；外层 mixed 再挂附件，兼容 QQ 邮箱
                 MimeMultipart related = new MimeMultipart("related");
 
                 MimeBodyPart htmlPart = new MimeBodyPart();
-                htmlPart.setContent(buildHtml(trimmedContent, trimmedContact, images), "text/html; charset=UTF-8");
+                htmlPart.setContent(buildProblemHtml(trimmedContent, trimmedContact, images), "text/html; charset=UTF-8");
                 related.addBodyPart(htmlPart);
 
                 for (int i = 0; i < images.size(); i++) {
@@ -141,10 +139,67 @@ public class FeedbackService {
             }
 
             mailSender.send(message);
+            log.info("问题反馈邮件已发送：images={}, contactLen={}", images.size(), trimmedContact.length());
         } catch (IllegalArgumentException | IllegalStateException e) {
             throw e;
         } catch (Exception e) {
+            log.error("问题反馈邮件发送失败", e);
             throw new IllegalStateException("邮件发送失败，请检查 QQ 邮箱 SMTP 与授权码是否正确", e);
+        }
+    }
+
+    public void sendToolRequest(ToolRequestPayload request) {
+        ensureMailReady("工具需求");
+
+        String scenario = request.getScenario() == null ? "" : request.getScenario().trim();
+        String usage = request.getUsage() == null ? "" : request.getUsage().trim();
+        String contact = request.getContact() == null ? "" : request.getContact().trim();
+
+        if (!StringUtils.hasText(scenario)) {
+            throw new IllegalArgumentException("请描述工具的使用场景");
+        }
+        if (!StringUtils.hasText(usage)) {
+            throw new IllegalArgumentException("请描述大概的使用方式");
+        }
+        if (!StringUtils.hasText(contact)) {
+            throw new IllegalArgumentException("请留下联系方式，方便我们进一步沟通");
+        }
+        if (scenario.length() > MAX_SCENARIO_LEN) {
+            throw new IllegalArgumentException("使用场景过长，请控制在 " + MAX_SCENARIO_LEN + " 字以内");
+        }
+        if (usage.length() > MAX_USAGE_LEN) {
+            throw new IllegalArgumentException("使用方式过长，请控制在 " + MAX_USAGE_LEN + " 字以内");
+        }
+        if (contact.length() > MAX_CONTACT_LEN) {
+            throw new IllegalArgumentException("联系方式过长");
+        }
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            message.setFrom(new InternetAddress(mailUsername));
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress(feedbackProperties.getTo()));
+            message.setSubject("【工具集平台】工具需求反馈", "UTF-8");
+            message.setText(buildToolRequestPlainText(scenario, usage, contact), "UTF-8");
+            mailSender.send(message);
+            log.info("工具需求邮件已发送：scenarioLen={}, usageLen={}", scenario.length(), usage.length());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("工具需求邮件发送失败", e);
+            throw new IllegalStateException("邮件发送失败，请检查 QQ 邮箱 SMTP 与授权码是否正确", e);
+        }
+    }
+
+    private void ensureMailReady(String featureName) {
+        if (!feedbackProperties.isEnabled()) {
+            throw new IllegalStateException(featureName + "功能暂未开启");
+        }
+        if (!StringUtils.hasText(feedbackProperties.getTo())) {
+            throw new IllegalStateException("未配置反馈接收邮箱");
+        }
+        if (!StringUtils.hasText(mailUsername) || !StringUtils.hasText(mailPassword)) {
+            throw new IllegalStateException(
+                    "邮件未配置完成：请设置 spring.mail.username，并用环境变量 MAIL_AUTH_CODE 配置 QQ 邮箱授权码");
         }
     }
 
@@ -205,10 +260,10 @@ public class FeedbackService {
         }
     }
 
-    private static String buildPlainText(String content, String contact, int imageCount) {
+    private static String buildProblemPlainText(String content, String contact, int imageCount) {
         StringBuilder sb = new StringBuilder();
-        sb.append("收到一条新的意见反馈：\n\n");
-        sb.append("【反馈内容】\n");
+        sb.append("收到一条新的问题反馈：\n\n");
+        sb.append("【问题描述】\n");
         sb.append(IMAGE_MARKER.matcher(content).replaceAll(mr -> "\n（见附件：图片" + mr.group(1) + "）\n"));
         sb.append("\n\n【用户联系方式】\n").append(contact);
         if (imageCount > 0) {
@@ -218,7 +273,15 @@ public class FeedbackService {
         return sb.toString();
     }
 
-    private static String buildHtml(String content, String contact, List<DecodedImage> images) {
+    private static String buildToolRequestPlainText(String scenario, String usage, String contact) {
+        return "收到一条新的工具需求：\n\n"
+                + "【使用场景】\n" + scenario + "\n\n"
+                + "【大概使用方式】\n" + usage + "\n\n"
+                + "【用户联系方式】\n" + contact + "\n\n"
+                + "——系统自动发送";
+    }
+
+    private static String buildProblemHtml(String content, String contact, List<DecodedImage> images) {
         String escaped = escapeHtml(content);
         Matcher matcher = IMAGE_MARKER.matcher(escaped);
         StringBuffer body = new StringBuffer();
@@ -238,8 +301,8 @@ public class FeedbackService {
         matcher.appendTail(body);
 
         return "<div style=\"font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#152033;line-height:1.6;\">"
-                + "<p>收到一条新的意见反馈：</p>"
-                + "<p><strong>【反馈内容】</strong></p>"
+                + "<p>收到一条新的问题反馈：</p>"
+                + "<p><strong>【问题描述】</strong></p>"
                 + "<div>" + body.toString().replace("\n", "<br>") + "</div>"
                 + "<p style=\"margin-top:16px;\"><strong>【用户联系方式】</strong><br>"
                 + escapeHtml(contact) + "</p>"

@@ -22,6 +22,13 @@ window.TOOL_CATEGORIES = [
         href: "./tools/image.html",
         icon: "image",
       },
+      {
+        id: "image-scan",
+        name: "图片扫描",
+        desc: "照片转扫描件 PDF",
+        href: "./tools/image-scan.html",
+        icon: "image-scan",
+      },
     ],
   },
   {

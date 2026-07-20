@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>图片扫描 - 工具集平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page narrow">
+    <nav class="top-nav">
+      <a href="../index.html">← 返回工具集</a>
+    </nav>
+
+    <header class="header">
+      <h1>图片扫描</h1>
+      <p>上传照片，生成接近扫描件效果的 PDF（支持多页）</p>
+    </header>
+
+    <section class="card">
+      <div class="upload-zone" id="uploadZone">
+        <input id="fileInput" type="file" accept="image/jpeg,image/png,image/bmp,image/gif,.jpg,.jpeg,.png,.bmp,.gif" multiple hidden />
+        <p class="upload-title">点击或拖拽图片到此处</p>
+        <p class="upload-hint" id="fileHint">支持 JPG / PNG / BMP / GIF，最多 10 张，单张 8MB</p>
+      </div>
+
+      <div class="scan-preview" id="previewList" hidden></div>
+
+      <label class="field">
+        <span>扫描效果</span>
+        <select id="scanMode">
+          <option value="document" selected>文档扫描（白底黑字）</option>
+          <option value="gray">灰度增强</option>
+          <option value="color">彩色增强</option>
+        </select>
+      </label>
+
+      <div class="btn-row">
+        <button id="scanBtn" class="primary" type="button" disabled>生成扫描 PDF</button>
+        <button id="clearBtn" class="ghost" type="button" disabled>清空</button>
+      </div>
+      <p class="status" id="status"></p>
+    </section>
+  </main>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-panel">
+      <h2>保存扫描结果</h2>
+      <p id="modalDesc">文件已生成，请选择保存位置。</p>
+      <div class="modal-actions">
+        <button id="saveAsBtn" class="primary" type="button">选择位置保存</button>
+        <button id="downloadBtn" class="secondary" type="button">浏览器下载</button>
+        <button id="cancelBtn" class="ghost" type="button">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api-config.js"></script>
+  <script src="./image-scan.js"></script>
+</body>
+</html>

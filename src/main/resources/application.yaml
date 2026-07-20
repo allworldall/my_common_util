@@ -28,16 +28,21 @@ server:
     max-http-form-post-size: 30MB
     max-swallow-size: 30MB
 
-# PDF 拆分防护配置
+# PDF 相关配置
 pdf:
   split:
     max-file-size-bytes: 52428800   # 50MB
     max-page-span: 100             # 单次最多拆分页数
     rate-limit-per-minute: 10      # 同 IP 每分钟请求上限
     api-token: ""                  # 非空时需在请求头带 X-Api-Token
+  scan:
+    max-file-size-bytes: 8388608   # 单张图片 8MB
+    max-images: 10                 # 单次最多图片数
 
-# 意见反馈邮件
+# 问题反馈 / 工具需求邮件
 feedback:
   enabled: true
   to: 249191841@qq.com             # 接收反馈的邮箱
   rate-limit-per-minute: 5         # 反馈接口单独限流（更严一点）
+
+# 日志目录可通过启动脚本 -DLOG_PATH 覆盖；GC 日志见 deploy/start.sh

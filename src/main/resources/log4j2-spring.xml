@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <!-- 可通过 -DLOG_PATH=... 覆盖，默认 logs；属性名避免与系统属性同名导致循环插值 -->
+        <Property name="logDir">${sys:LOG_PATH:-logs}</Property>
+        <Property name="APP_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
+        <Property name="ACCESS_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} | %msg%n</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${APP_PATTERN}"/>
+        </Console>
+
+        <!-- 服务业务 / 错误日志，按天滚动 -->
+        <RollingFile name="AppFile"
+                     fileName="${logDir}/app.log"
+                     filePattern="${logDir}/app.%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="${APP_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+
+        <!-- 访问日志：IP + 接口，按天滚动 -->
+        <RollingFile name="AccessFile"
+                     fileName="${logDir}/access.log"
+                     filePattern="${logDir}/access.%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="${ACCESS_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="ACCESS_LOG" level="INFO" additivity="false">
+            <AppenderRef ref="AccessFile"/>
+        </Logger>
+
+        <Logger name="com.example.my_common_util" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="AppFile"/>
+        </Logger>
+
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="AppFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
