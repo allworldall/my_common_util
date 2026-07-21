@@ -78,6 +78,11 @@ deploy/deploy.env
 deploy/deploy.env.*
 !deploy/deploy.env.example
 
+# 本地 SSH 密码脚本（含明文密码，绝对勿提交）
+deploy/ssh-with-pass.local.sh
+deploy/*.local.sh
+!deploy/*.local.example
+
 # 前端本地缓存（如果以后用了 npm）
 node_modules/
 dist/

@@ -11,6 +11,10 @@
 #   1) 配置 nginx（参考 deploy/nginx.conf.example）
 #   2) 安装 systemd：sudo cp deploy/my-common-util.service /etc/systemd/system/ && daemon-reload && enable
 #   3) 配置环境变量：/etc/service_env/my_common_util（参考 deploy/env.example）
+#   4) 普通用户部署：配置 sudoers（参考 deploy/sudoers.example），并把 APP_HOME 属主交给 DEPLOY_USER
+#   5) 免密手输：填写 deploy/ssh-with-pass.local.sh（从 .example 复制，不入库）
+#
+# 有密码脚本时：全部 ssh/scp 统一走自动填密，不再手输。
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -22,7 +26,7 @@ for arg in "$@"; do
   case "$arg" in
     --skip-build) SKIP_BUILD=1 ;;
     -h|--help)
-      sed -n '2,16p' "$0"
+      sed -n '2,17p' "$0"
       exit 0
       ;;
     *)
@@ -57,13 +61,95 @@ source "$ENV_FILE"
 : "${SERVICE_NAME:?请在 $ENV_FILE 设置 SERVICE_NAME}"
 DEPLOY_SSH_PORT="${DEPLOY_SSH_PORT:-22}"
 
+# 非 root 部署时，systemctl 走 sudo（需配 NOPASSWD，见 deploy/sudoers.example）
+if [[ -z "${DEPLOY_USE_SUDO:-}" ]]; then
+  if [[ "$DEPLOY_USER" == "root" ]]; then
+    DEPLOY_USE_SUDO=0
+  else
+    DEPLOY_USE_SUDO=1
+  fi
+fi
+
 JAR_NAME="my_common_util-0.0.1-SNAPSHOT.jar"
 LOCAL_JAR="$ROOT/target/$JAR_NAME"
 REMOTE="${DEPLOY_USER}@${DEPLOY_HOST}"
-SSH=(ssh -p "$DEPLOY_SSH_PORT" "$REMOTE")
-SCP=(scp -P "$DEPLOY_SSH_PORT")
 
-echo "==> 目标：$REMOTE  APP_HOME=$APP_HOME"
+# ---- 密码脚本：所有 ssh/scp 统一调用，不再有的走有的不走 ----
+SSH_PASS_SCRIPT="$ROOT/deploy/ssh-with-pass.local.sh"
+ASKPASS_SCRIPT="$ROOT/deploy/ssh-askpass.sh"
+USE_ASKPASS=0
+if [[ -f "$SSH_PASS_SCRIPT" ]]; then
+  # shellcheck disable=SC1090
+  source "$SSH_PASS_SCRIPT"
+  if [[ -z "${DEPLOY_SSH_PASS:-}" || "$DEPLOY_SSH_PASS" == "在这里粘贴密码" ]]; then
+    echo "错误：deploy/ssh-with-pass.local.sh 存在，但 DEPLOY_SSH_PASS 还是占位符"
+    exit 1
+  fi
+  if [[ ! -x "$ASKPASS_SCRIPT" ]]; then
+    chmod +x "$ASKPASS_SCRIPT" 2>/dev/null || true
+  fi
+  if [[ ! -f "$ASKPASS_SCRIPT" ]]; then
+    echo "错误：缺少 $ASKPASS_SCRIPT"
+    exit 1
+  fi
+  export DEPLOY_SSH_PASS
+  export SSH_ASKPASS="$ASKPASS_SCRIPT"
+  export SSH_ASKPASS_REQUIRE=force
+  export DISPLAY="${DISPLAY:-:0}"
+  USE_ASKPASS=1
+fi
+
+# SSH 连接复用 +（可选）自动填密
+# ControlPath 必须短：macOS TMPDIR 很长，否则会报 unix_listener path too long
+SSH_CTRL_DIR="/tmp/toolkit-ssh-$USER"
+mkdir -p "$SSH_CTRL_DIR"
+SSH_CTRL_PATH="$SSH_CTRL_DIR/%C"
+SSH_OPTS=(
+  -o StrictHostKeyChecking=accept-new
+  -o PreferredAuthentications=password
+  -o PubkeyAuthentication=no
+  -o ControlMaster=auto
+  -o "ControlPath=$SSH_CTRL_PATH"
+  -o ControlPersist=120
+)
+SSH=(ssh -p "$DEPLOY_SSH_PORT" "${SSH_OPTS[@]}" "$REMOTE")
+SCP=(scp -P "$DEPLOY_SSH_PORT" "${SSH_OPTS[@]}")
+
+cleanup_ssh() {
+  ssh -p "$DEPLOY_SSH_PORT" -o "ControlPath=$SSH_CTRL_PATH" -O exit "$REMOTE" 2>/dev/null || true
+}
+
+# 统一入口：有密码脚本时全部走 ASKPASS；没有则退回手输（仍只输一次，靠连接复用）
+run_ssh() {
+  if [[ "$USE_ASKPASS" == "1" ]]; then
+    "${SSH[@]}" "$@" < /dev/null
+  else
+    "${SSH[@]}" "$@"
+  fi
+}
+run_scp() {
+  if [[ "$USE_ASKPASS" == "1" ]]; then
+    "${SCP[@]}" "$@" < /dev/null
+  else
+    "${SCP[@]}" "$@"
+  fi
+}
+
+remote_sys() {
+  if [[ "$DEPLOY_USE_SUDO" == "1" ]]; then
+    run_ssh "sudo systemctl $*"
+  else
+    run_ssh "systemctl $*"
+  fi
+}
+
+echo "==> 目标：$REMOTE  APP_HOME=$APP_HOME  sudo=$DEPLOY_USE_SUDO"
+if [[ "$USE_ASKPASS" == "1" ]]; then
+  echo "==> SSH：全部远程操作走 ssh-with-pass.local.sh 自动填密（无需手输）"
+else
+  echo "==> SSH：未配置密码脚本，将手输 1 次密码（连接复用）"
+  echo "    免手输请：cp deploy/ssh-with-pass.local.example deploy/ssh-with-pass.local.sh 并填写密码"
+fi
 
 if [[ "$SKIP_BUILD" -eq 0 ]]; then
   echo "==> 打包（需本机 JDK 21）"
@@ -77,22 +163,58 @@ if [[ ! -f "$LOCAL_JAR" ]]; then
   exit 1
 fi
 
+echo "==> 连接服务器"
+run_ssh "true"
+
 echo "==> 上传后端（jar + start.sh）"
-"${SSH[@]}" "mkdir -p '$APP_HOME/logs'"
-"${SCP[@]}" \
+run_ssh "mkdir -p '$APP_HOME/logs'"
+run_scp \
   "$ROOT/deploy/start.sh" \
   "$LOCAL_JAR" \
   "${REMOTE}:${APP_HOME}/"
-"${SSH[@]}" "chmod +x '$APP_HOME/start.sh'"
+# start.sh 本地已是可执行，scp 会带上 +x，无需再远程 chmod
+# （若文件仍属 root，webuser 去 chmod 会 Operation not permitted）
 
 echo "==> 上传前端"
-"${SSH[@]}" "mkdir -p '$FRONTEND_REMOTE' && find '$FRONTEND_REMOTE' -mindepth 1 -delete"
+run_ssh "mkdir -p '$FRONTEND_REMOTE' && find '$FRONTEND_REMOTE' -mindepth 1 -delete"
+
+FRONTEND_STAGE="$(mktemp -d "${TMPDIR:-/tmp}/toolkit-frontend.XXXXXX")"
+cleanup_all() {
+  rm -rf "$FRONTEND_STAGE"
+  cleanup_ssh
+}
+trap cleanup_all EXIT
+cp -R "$ROOT/frontend/." "$FRONTEND_STAGE/"
+
+# 把 SEO 占位符替换成真实域名（robots / sitemap / site-config）
+SITE_ORIGIN="${SITE_ORIGIN:-}"
+SITE_ORIGIN="${SITE_ORIGIN%/}"
+if [[ -n "$SITE_ORIGIN" ]]; then
+  echo "==> SEO 域名：$SITE_ORIGIN"
+  for f in \
+    "$FRONTEND_STAGE/robots.txt" \
+    "$FRONTEND_STAGE/sitemap.xml" \
+    "$FRONTEND_STAGE/js/site-config.js"
+  do
+    if [[ -f "$f" ]]; then
+      # macOS / Linux 兼容的原地替换
+      sed "s|__SITE_ORIGIN__|${SITE_ORIGIN}|g" "$f" > "${f}.tmp" && mv "${f}.tmp" "$f"
+    fi
+  done
+else
+  echo "==> 未设置 SITE_ORIGIN，跳过 robots/sitemap 域名替换（建议在 deploy.env 配置）"
+fi
+
 (
-  cd "$ROOT/frontend"
-  "${SCP[@]}" -r . "${REMOTE}:${FRONTEND_REMOTE}/"
+  cd "$FRONTEND_STAGE"
+  run_scp -r . "${REMOTE}:${FRONTEND_REMOTE}/"
 )
 
+# Nginx 需要能读前端；失败多半是目录仍属 root，需服务器上一次性 chown 给 webuser
+echo "==> 修正前端目录权限（供 nginx 读取）"
+run_ssh "chmod 755 '$APP_HOME' '$FRONTEND_REMOTE' 2>/dev/null || true; find '$FRONTEND_REMOTE' -type d -exec chmod 755 {} + 2>/dev/null || true; find '$FRONTEND_REMOTE' -type f -exec chmod 644 {} + 2>/dev/null || true"
 echo "==> 重启服务 $SERVICE_NAME"
-"${SSH[@]}" "systemctl restart '$SERVICE_NAME' && systemctl is-active '$SERVICE_NAME'"
+remote_sys restart "$SERVICE_NAME"
+remote_sys is-active "$SERVICE_NAME"
 
 echo "==> 完成"

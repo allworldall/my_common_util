@@ -54,29 +54,48 @@ cp deploy/deploy.env.example deploy/deploy.env
 
 ```bash
 DEPLOY_HOST=你的服务器IP或域名
-DEPLOY_USER=root
+DEPLOY_USER=webuser
 DEPLOY_SSH_PORT=22
 APP_HOME=/var/app/my_common_util
-FRONTEND_REMOTE=/var/www/my_common_util/frontend
+FRONTEND_REMOTE=/var/app/my_common_util/frontend
 SERVICE_NAME=my-common-util
 ```
 
-确认本机可免密或带密钥 SSH：
+确认本机可免密 SSH（普通用户）：
 
 ```bash
-ssh -p 22 root@你的服务器IP
+ssh -p 22 webuser@你的服务器IP
 ```
 
 ### 2. 服务器装运行环境
 
 - JDK 21（`java -version` 能看到 21）
 - Nginx
-- 目录：
+- 目录（属主交给部署用户，避免再次出现 403）：
   ```bash
-  mkdir -p /var/app/my_common_util/logs
-  mkdir -p /var/www/my_common_util/frontend
-  mkdir -p /etc/service_env
+  sudo mkdir -p /var/app/my_common_util/logs
+  sudo mkdir -p /var/app/my_common_util/frontend
+  sudo mkdir -p /etc/service_env
+  sudo chown -R webuser:webuser /var/app/my_common_util
+  sudo chmod 755 /var/app/my_common_util /var/app/my_common_util/frontend
   ```
+
+### 2.1 普通用户重启服务权限（只需一次）
+
+```bash
+# 本机
+scp deploy/sudoers.example root@服务器:/tmp/my-common-util-sudoers
+# 服务器（root）
+sudo cp /tmp/my-common-util-sudoers /etc/sudoers.d/my-common-util
+sudo chmod 440 /etc/sudoers.d/my-common-util
+sudo visudo -cf /etc/sudoers.d/my-common-util
+```
+
+确认 `webuser` 可无密码执行：
+
+```bash
+sudo -u webuser sudo -n systemctl is-active my-common-util
+```
 
 ### 3. 服务器配业务环境变量（邮件等）
 
@@ -90,7 +109,7 @@ ssh root@服务器 'vim /etc/service_env/my_common_util'
 
 ### 4. 服务器装 systemd
 
-把仓库里的 unit 拷到服务器（首次一次即可）：
+把仓库里的 unit 拷到服务器（首次一次即可；`User=` 需与 `DEPLOY_USER` 一致）：
 
 ```bash
 scp deploy/my-common-util.service root@服务器:/etc/systemd/system/my-common-util.service
@@ -102,6 +121,10 @@ ssh root@服务器 'systemctl daemon-reload && systemctl enable my-common-util'
 ### 5. 服务器配 Nginx
 
 参考 `deploy/nginx.conf.example`，改 `server_name` / 路径后启用，并 `nginx -t && systemctl reload nginx`。
+
+建议同时在 `deploy/deploy.env` 填写 `SITE_ORIGIN`（如 `https://你的域名`，无末尾斜杠）。  
+发布时会自动写入 `robots.txt` / `sitemap.xml` / canonical，便于搜索引擎收录。  
+上线后把 `https://你的域名/sitemap.xml` 提交到百度站长 / Google Search Console。
 
 ### 6. 本机第一次正式发布
 
@@ -138,11 +161,11 @@ ssh root@服务器 'systemctl daemon-reload && systemctl enable my-common-util'
 查看服务：
 
 ```bash
-ssh root@服务器 'systemctl status my-common-util'
-ssh root@服务器 'journalctl -u my-common-util -n 100 --no-pager'
+ssh webuser@服务器 'sudo systemctl status my-common-util'
+ssh webuser@服务器 'journalctl -u my-common-util -n 100 --no-pager'
 ```
 
-回滚（简单做法）：保留上一版 jar，SSH 上去换回旧 jar 后 `systemctl restart my-common-util`。
+回滚（简单做法）：保留上一版 jar，SSH 上去换回旧 jar 后 `sudo systemctl restart my-common-util`。
 
 ---
 

@@ -1,0 +1,9 @@
+# 普通用户发布所需的 sudo 权限（不要提权到全能 root）
+# 用法（在服务器上，用 root 执行一次）：
+#   sudo cp deploy/sudoers.example /etc/sudoers.d/my-common-util
+#   sudo chmod 440 /etc/sudoers.d/my-common-util
+#   sudo visudo -cf /etc/sudoers.d/my-common-util
+#
+# 把下面的 webuser 改成你的 DEPLOY_USER
+
+webuser ALL=(root) NOPASSWD: /bin/systemctl restart my-common-util, /bin/systemctl is-active my-common-util, /bin/systemctl status my-common-util

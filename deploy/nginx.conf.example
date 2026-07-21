@@ -17,6 +17,10 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
+    # SEO：确保可直接访问（不要被 try_files 误伤）
+    location = /robots.txt { }
+    location = /sitemap.xml { }
+
     # 后端 API 反向代理
     location /api/ {
         proxy_pass http://127.0.0.1:8080;
