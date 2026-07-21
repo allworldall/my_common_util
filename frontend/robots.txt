@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# 发布时由 release.sh 将 __SITE_ORIGIN__ 替换为真实域名（如 https://tools.example.com）
+Sitemap: __SITE_ORIGIN__/sitemap.xml

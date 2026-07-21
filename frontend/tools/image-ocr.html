@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>图片文字识别OCR - 截图提取文字 | ToolKit</title>
+  <meta name="description" content="免费在线OCR：上传图片或粘贴截图，识别中英文文字。本地识别，图片不上传，适合提取聊天记录、文档文字。" />
+  <meta name="keywords" content="OCR,图片转文字,文字识别,截图提取文字,在线OCR,图片文字提取" />
+  <meta name="robots" content="index,follow" />
+  <meta property="og:title" content="图片文字识别OCR - 截图提取文字 | ToolKit" />
+  <meta property="og:description" content="免费在线OCR：上传图片或粘贴截图，识别中英文文字。本地识别，图片不上传，适合提取聊天记录、文档文字。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="zh_CN" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page">
+    <nav class="top-nav"><a href="../index.html">← 返回工具集</a></nav>
+    <header class="header">
+      <h1>图片文字提取</h1>
+      <p>上传图片或粘贴截图，本地识别图中文字（中英文），图片不会上传到服务器</p>
+    </header>
+
+    <section class="card">
+      <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,image/bmp,image/gif,.jpg,.jpeg,.png,.webp,.bmp,.gif" hidden />
+
+      <div class="split-panes ocr-panes">
+        <div class="ocr-col">
+          <p class="field-label">图片预览</p>
+          <div class="ocr-preview" id="previewBox" tabindex="0" role="button" aria-label="上传或粘贴图片">
+            <img id="preview" alt="" hidden />
+            <div class="ocr-placeholder" id="placeholder">
+              <p class="ocr-placeholder-title">上传 / 拖拽 / 粘贴截图</p>
+              <p class="ocr-placeholder-hint">支持 JPG、PNG、WEBP 等</p>
+              <p class="ocr-placeholder-hint">快捷键 <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>V</kbd></p>
+            </div>
+          </div>
+        </div>
+        <div class="ocr-col">
+          <p class="field-label">识别结果</p>
+          <textarea id="output" class="ocr-output" placeholder="识别出的文字会显示在这里" readonly></textarea>
+        </div>
+      </div>
+
+      <div class="ocr-toolbar">
+        <label class="field ocr-lang">
+          <span>识别语言</span>
+          <select id="lang">
+            <option value="chi_sim+eng" selected>中文 + 英文</option>
+            <option value="chi_sim">仅中文</option>
+            <option value="eng">仅英文</option>
+          </select>
+        </label>
+        <div class="btn-row">
+          <button type="button" class="secondary" id="uploadBtn">上传图片</button>
+          <button type="button" class="primary" id="ocrBtn" disabled>开始识别</button>
+          <button type="button" class="secondary" id="copyBtn" disabled>复制结果</button>
+          <button type="button" class="ghost" id="clearBtn" disabled>清空</button>
+        </div>
+      </div>
+
+      <p class="status" id="status"></p>
+      <p class="note">首次识别会下载语言包，稍等片刻；之后可离线使用。清晰的截图、扫描件效果更好。</p>
+    </section>
+  </main>
+
+  <script src="../js/site-config.js"></script>
+  <script src="../js/tools-config.js"></script>
+  <script src="../js/seo.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="./image-ocr.js"></script>
+</body>
+</html>

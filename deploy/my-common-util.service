@@ -4,7 +4,9 @@ After=network.target
 
 [Service]
 Type=simple
-User=root
+# 与 deploy.env 的 DEPLOY_USER 保持一致（普通用户部署时不要用 root）
+User=webuser
+Group=webuser
 WorkingDirectory=/var/app/my_common_util
 # 邮件账号等环境变量；文件不存在也不影响启动（前面的 -）
 EnvironmentFile=-/etc/service_env/my_common_util
