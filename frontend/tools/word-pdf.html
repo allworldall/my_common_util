@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>在线PDF拆分 - 按页码免费拆分PDF文件 | ToolKit</title>
-  <meta name="description" content="免费在线PDF拆分工具：上传PDF，按页码范围拆分并下载，适合截取合同、报告指定页。无需安装软件。" />
-  <meta name="keywords" content="PDF拆分,在线PDF拆分,PDF分割,按页拆分PDF,PDF截取页面" />
+  <title>Word转PDF / PDF转Word - 在线互转 | ToolKit</title>
+  <meta name="description" content="免费在线 Word 与 PDF 互转：支持 doc/docx 转 PDF、PDF 转 Word，上传后即可下载，适合合同、报告格式转换。" />
+  <meta name="keywords" content="Word转PDF,PDF转Word,docx转PDF,在线Word转PDF,PDF转docx" />
   <meta name="robots" content="index,follow" />
-  <meta property="og:title" content="在线PDF拆分 - 按页码免费拆分PDF文件 | ToolKit" />
-  <meta property="og:description" content="免费在线PDF拆分工具：上传PDF，按页码范围拆分并下载，适合截取合同、报告指定页。无需安装软件。" />
+  <meta property="og:title" content="Word转PDF / PDF转Word - 在线互转 | ToolKit" />
+  <meta property="og:description" content="免费在线 Word 与 PDF 互转：支持 doc/docx 转 PDF、PDF 转 Word，上传后即可下载，适合合同、报告格式转换。" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="zh_CN" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -23,43 +23,42 @@
     </nav>
 
     <header class="header">
-      <h1>PDF拆分</h1>
-      <p>上传 PDF，选择页码范围，拆分后保存到本地</p>
+      <h1>Word ↔ PDF</h1>
+      <p>Word 与 PDF 互转，上传后转换并保存到本地</p>
     </header>
 
     <section class="card">
+      <label class="field">
+        <span>转换方向</span>
+        <select id="direction">
+          <option value="word-to-pdf" selected>Word → PDF（.doc / .docx）</option>
+          <option value="pdf-to-word">PDF → Word（.docx）</option>
+        </select>
+      </label>
+
       <div class="upload-zone" id="uploadZone">
-        <input id="fileInput" type="file" accept="application/pdf,.pdf" hidden />
-        <p class="upload-title">点击或拖拽 PDF 到此处</p>
-        <p class="upload-hint" id="fileHint">支持最大 50M</p>
+        <input id="fileInput" type="file" accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden />
+        <p class="upload-title" id="uploadTitle">点击或拖拽 Word 到此处</p>
+        <p class="upload-hint" id="fileHint">支持最大 20M</p>
       </div>
 
       <div class="meta" id="fileMeta" hidden>
         <span id="metaName">-</span>
-        <span id="metaPages">总页数：-</span>
         <span id="metaSize">大小：-</span>
       </div>
 
-      <div class="range-row">
-        <label class="field">
-          <span>起始页</span>
-          <input id="startPage" type="number" min="1" value="1" />
-        </label>
-        <label class="field">
-          <span>结束页</span>
-          <input id="endPage" type="number" min="1" value="1" />
-        </label>
-      </div>
+      <p class="convert-notice" id="convertTip"></p>
 
-      <button id="splitBtn" class="primary" type="button" disabled>拆分并下载</button>
+      <button id="convertBtn" class="primary" type="button" disabled>开始转换</button>
       <p class="status" id="status"></p>
     </section>
   </main>
 
   <div class="modal" id="modal" hidden>
     <div class="modal-panel">
-      <h2>保存拆分结果</h2>
+      <h2>保存转换结果</h2>
       <p id="modalDesc">文件已生成，请选择保存位置。</p>
+      <p class="convert-notice compact" id="modalTip"></p>
       <p class="status" id="modalStatus" hidden></p>
       <div class="modal-actions">
         <button id="saveAsBtn" class="primary" type="button">选择位置保存</button>
@@ -73,6 +72,6 @@
   <script src="../js/tools-config.js"></script>
   <script src="../js/seo.js"></script>
   <script src="../js/api-config.js"></script>
-  <script src="./pdf-split.js"></script>
+  <script src="./word-pdf.js"></script>
 </body>
 </html>

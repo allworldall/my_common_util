@@ -1,0 +1,2 @@
+# PDF → Word 转换（比 LibreOffice writer_pdf_import 保真更好，仍属近似转换）
+pdf2docx>=0.5.8

@@ -11,6 +11,8 @@
   const ICONS = {
     "pdf-split": `
       <svg viewBox="0 0 64 64" width="36" height="36"><rect x="12" y="8" width="28" height="38" rx="3" fill="#fff" stroke="currentColor" stroke-width="2.2"/><path d="M40 16h10v32a3 3 0 0 1-3 3H28" fill="#e8f1ff" stroke="currentColor" stroke-width="2.2"/><path d="M19 22h12M19 29h12M19 36h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M34 46l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    "word-pdf": `
+      <svg viewBox="0 0 64 64" width="36" height="36"><rect x="8" y="14" width="20" height="28" rx="3" fill="#fff" stroke="currentColor" stroke-width="2"/><rect x="36" y="14" width="20" height="28" rx="3" fill="#e8f1ff" stroke="currentColor" stroke-width="2"/><path d="M13 22h10M13 28h10M13 34h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M41 22h10M41 28h10M41 34h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M30 28h4M32 25l4 3-4 3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
     image: `
       <svg viewBox="0 0 64 64" width="36" height="36"><rect x="10" y="14" width="44" height="36" rx="6" fill="#e8f1ff" stroke="currentColor" stroke-width="2.2"/><circle cx="24" cy="28" r="5" fill="#fff" stroke="currentColor" stroke-width="2"/><path d="M12 42l12-10 8 7 8-12 12 15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
     "image-scan": `

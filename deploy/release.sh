@@ -10,9 +10,13 @@
 # 首次上线额外建议（手动一次即可）：
 #   1) 配置 nginx（参考 deploy/nginx.conf.example）
 #   2) 安装 systemd：sudo cp deploy/my-common-util.service /etc/systemd/system/ && daemon-reload && enable
-#   3) 配置环境变量：/etc/service_env/my_common_util（参考 deploy/env.example）
+#      （unit 内需含 SPRING_PROFILES_ACTIVE=prod，加载 application-prod.yaml）
+#   3) 配置环境变量：/etc/service_env/my_common_util（参考 deploy/env.example；邮件等密钥）
 #   4) 普通用户部署：配置 sudoers（参考 deploy/sudoers.example），并把 APP_HOME 属主交给 DEPLOY_USER
 #   5) 免密手输：填写 deploy/ssh-with-pass.local.sh（从 .example 复制，不入库）
+#
+# 说明：release.sh 的参数 prod 指「发布目标配置 deploy.env.prod」，
+#       与 Spring 运行时 profile（local/prod）不是同一概念。
 #
 # 有密码脚本时：全部 ssh/scp 统一走自动填密，不再手输。
 set -euo pipefail
@@ -166,13 +170,20 @@ fi
 echo "==> 连接服务器"
 run_ssh "true"
 
-echo "==> 上传后端（jar + start.sh）"
+# 必须先停再覆盖 jar：Spring Boot fat jar 被运行中进程占用时，
+# 直接 scp 覆盖会导致旧进程关闭时报
+# NoClassDefFoundError: org/apache/catalina/Lifecycle$SingleUse
+echo "==> 停止服务 ${SERVICE_NAME} (避免覆盖正在运行的 jar)"
+remote_sys stop "${SERVICE_NAME}" || true
+
+echo "==> 上传后端（jar + start.sh + pdf2docx 脚本）"
 run_ssh "mkdir -p '$APP_HOME/logs'"
 run_scp \
   "$ROOT/deploy/start.sh" \
+  "$ROOT/deploy/pdf2docx_convert.py" \
   "$LOCAL_JAR" \
   "${REMOTE}:${APP_HOME}/"
-# start.sh 本地已是可执行，scp 会带上 +x，无需再远程 chmod
+# start.sh / pdf2docx_convert.py 本地已是可执行，scp 会带上 +x
 # （若文件仍属 root，webuser 去 chmod 会 Operation not permitted）
 
 echo "==> 上传前端"
@@ -213,8 +224,10 @@ fi
 # Nginx 需要能读前端；失败多半是目录仍属 root，需服务器上一次性 chown 给 webuser
 echo "==> 修正前端目录权限（供 nginx 读取）"
 run_ssh "chmod 755 '$APP_HOME' '$FRONTEND_REMOTE' 2>/dev/null || true; find '$FRONTEND_REMOTE' -type d -exec chmod 755 {} + 2>/dev/null || true; find '$FRONTEND_REMOTE' -type f -exec chmod 644 {} + 2>/dev/null || true"
-echo "==> 重启服务 $SERVICE_NAME"
-remote_sys restart "$SERVICE_NAME"
-remote_sys is-active "$SERVICE_NAME"
+echo "==> 启动服务 ${SERVICE_NAME}"
+# unit 文件若刚改过，reload 一次避免 stale 配置
+remote_sys daemon-reload
+remote_sys start "${SERVICE_NAME}"
+remote_sys is-active "${SERVICE_NAME}"
 
 echo "==> 完成"

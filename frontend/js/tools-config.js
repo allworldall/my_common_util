@@ -7,7 +7,7 @@ window.TOOL_CATEGORIES = [
   {
     id: "file",
     name: "文件处理",
-    desc: "PDF、图片等常用文件处理",
+    desc: "PDF、Word、图片等常用文件处理",
     tools: [
       {
         id: "pdf-split",
@@ -20,6 +20,19 @@ window.TOOL_CATEGORIES = [
           description:
             "免费在线PDF拆分工具：上传PDF，按页码范围拆分并下载，适合截取合同、报告指定页。无需安装软件。",
           keywords: "PDF拆分,在线PDF拆分,PDF分割,按页拆分PDF,PDF截取页面",
+        },
+      },
+      {
+        id: "word-pdf",
+        name: "Word↔PDF",
+        desc: "Word 与 PDF 互转（结果请核对）",
+        href: "./tools/word-pdf.html",
+        icon: "word-pdf",
+        seo: {
+          title: "Word转PDF / PDF转Word - 在线互转 | ToolKit",
+          description:
+            "免费在线 Word 与 PDF 互转：支持 doc/docx 转 PDF、PDF 转 Word。转换后请自行打开核对文字与版式，复杂排版可能需人工调整。",
+          keywords: "Word转PDF,PDF转Word,docx转PDF,在线Word转PDF,PDF转docx",
         },
       },
       {
@@ -185,11 +198,11 @@ window.TOOL_CATEGORIES = [
 
 /** 首页 SEO（与 index.html meta 保持一致） */
 window.SITE_SEO = {
-  title: "ToolKit 在线工具集 - 免费PDF拆分/OCR/JSON/时间戳等",
+  title: "ToolKit 在线工具集 - 免费PDF拆分/Word互转/OCR/JSON等",
   description:
-    "免费在线工具箱：PDF拆分、图片压缩、图片OCR文字识别、JSON格式化、时间戳转换、Base64、UUID、文本Diff等。开发联调与办公处理常用，多数工具本地处理、数据不上传。",
+    "免费在线工具箱：PDF拆分、Word与PDF互转、图片压缩、图片OCR文字识别、JSON格式化、时间戳转换、Base64、UUID、文本Diff等。开发联调与办公处理常用，多数工具本地处理、数据不上传。",
   keywords:
-    "在线工具,工具集,PDF拆分,图片OCR,JSON格式化,时间戳转换,Base64,UUID生成,文本对比,ToolKit",
+    "在线工具,工具集,PDF拆分,Word转PDF,PDF转Word,图片OCR,JSON格式化,时间戳转换,Base64,UUID生成,文本对比,ToolKit",
 };
 
 /** 扁平工具列表，便于 sitemap / 相关推荐 */

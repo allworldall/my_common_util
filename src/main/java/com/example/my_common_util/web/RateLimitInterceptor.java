@@ -10,6 +10,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.example.my_common_util.config.FeedbackProperties;
 import com.example.my_common_util.config.PdfSplitProperties;
+import com.example.my_common_util.config.WordPdfProperties;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,11 +22,16 @@ import jakarta.servlet.http.HttpServletResponse;
 public class RateLimitInterceptor implements HandlerInterceptor {
 
     private final PdfSplitProperties pdfProperties;
+    private final WordPdfProperties wordPdfProperties;
     private final FeedbackProperties feedbackProperties;
     private final Map<String, WindowCounter> counters = new ConcurrentHashMap<>();
 
-    public RateLimitInterceptor(PdfSplitProperties pdfProperties, FeedbackProperties feedbackProperties) {
+    public RateLimitInterceptor(
+            PdfSplitProperties pdfProperties,
+            WordPdfProperties wordPdfProperties,
+            FeedbackProperties feedbackProperties) {
         this.pdfProperties = pdfProperties;
+        this.wordPdfProperties = wordPdfProperties;
         this.feedbackProperties = feedbackProperties;
     }
 
@@ -37,12 +43,21 @@ public class RateLimitInterceptor implements HandlerInterceptor {
         }
 
         String path = request.getRequestURI();
-        int limit = path.startsWith("/api/feedback")
-                ? feedbackProperties.getRateLimitPerMinute()
-                : pdfProperties.getRateLimitPerMinute();
+        int limit;
+        String bucket;
+        if (path.startsWith("/api/feedback")) {
+            limit = feedbackProperties.getRateLimitPerMinute();
+            bucket = "feedback";
+        } else if (path.startsWith("/api/doc")) {
+            limit = wordPdfProperties.getRateLimitPerMinute();
+            bucket = "doc";
+        } else {
+            limit = pdfProperties.getRateLimitPerMinute();
+            bucket = "pdf";
+        }
 
         String clientIp = ClientIpResolver.resolve(request);
-        String key = path.startsWith("/api/feedback") ? "feedback:" + clientIp : "pdf:" + clientIp;
+        String key = bucket + ":" + clientIp;
         long now = System.currentTimeMillis();
         WindowCounter counter = counters.compute(key, (k, existing) -> {
             if (existing == null || now - existing.windowStartMs >= 60_000L) {
