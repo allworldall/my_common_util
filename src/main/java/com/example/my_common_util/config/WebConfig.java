@@ -41,8 +41,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(accessLogInterceptor)
                 .addPathPatterns("/api/**");
         registry.addInterceptor(apiTokenInterceptor)
-                .addPathPatterns("/api/pdf/**");
+                .addPathPatterns("/api/pdf/**", "/api/doc/**");
         registry.addInterceptor(rateLimitInterceptor)
-                .addPathPatterns("/api/pdf/**", "/api/feedback/**");
+                .addPathPatterns("/api/pdf/**", "/api/doc/**", "/api/feedback/**");
     }
 }

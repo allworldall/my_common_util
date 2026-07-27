@@ -12,6 +12,7 @@
   const statusEl = $("status");
   const modal = $("modal");
   const modalDesc = $("modalDesc");
+  const modalStatus = $("modalStatus");
   const saveAsBtn = $("saveAsBtn");
   const downloadBtn = $("downloadBtn");
   const cancelBtn = $("cancelBtn");
@@ -25,9 +26,25 @@
   let pendingBlob = null;
   let pendingFileName = "scan.pdf";
 
+  function canUseSavePicker() {
+    return typeof window.showSaveFilePicker === "function" && window.isSecureContext;
+  }
+
   function setStatus(text, type = "") {
     statusEl.textContent = text || "";
     statusEl.className = "status" + (type ? ` ${type}` : "");
+  }
+
+  function setModalStatus(text, type = "") {
+    if (!text) {
+      modalStatus.hidden = true;
+      modalStatus.textContent = "";
+      modalStatus.className = "status";
+      return;
+    }
+    modalStatus.hidden = false;
+    modalStatus.textContent = text;
+    modalStatus.className = "status" + (type ? ` ${type}` : "");
   }
 
   function formatSize(bytes) {
@@ -132,11 +149,21 @@
     pendingBlob = blob;
     pendingFileName = fileName;
     modalDesc.textContent = `已生成 ${fileName}（${formatSize(blob.size)}），请选择保存方式。`;
+    setModalStatus("");
+    if (canUseSavePicker()) {
+      saveAsBtn.hidden = false;
+      saveAsBtn.className = "primary";
+      downloadBtn.className = "secondary";
+    } else {
+      saveAsBtn.hidden = true;
+      downloadBtn.className = "primary";
+    }
     modal.hidden = false;
   }
 
   function closeModal() {
     modal.hidden = true;
+    setModalStatus("");
   }
 
   function triggerBrowserDownload(blob, fileName) {
@@ -151,8 +178,8 @@
   }
 
   async function saveWithPicker(blob, fileName) {
-    if (!window.showSaveFilePicker) {
-      throw new Error("当前浏览器不支持选择保存位置，请使用「浏览器下载」");
+    if (!canUseSavePicker()) {
+      throw new Error("当前环境不支持选择保存位置，请使用「浏览器下载」");
     }
     const handle = await window.showSaveFilePicker({
       suggestedName: fileName,
@@ -236,12 +263,13 @@
 
   saveAsBtn.addEventListener("click", async () => {
     try {
+      setModalStatus("");
       await saveWithPicker(pendingBlob, pendingFileName);
       closeModal();
       setStatus("已保存到指定位置", "ok");
     } catch (err) {
       if (err && err.name === "AbortError") return;
-      setStatus(err.message || "保存失败", "error");
+      setModalStatus(err.message || "保存失败", "error");
     }
   });
 

@@ -1,0 +1,19 @@
+# 线上环境（spring.profiles.active=prod）
+# systemd 的 Environment=SPRING_PROFILES_ACTIVE=prod 启用本 profile
+
+doc:
+  convert:
+    # RHEL/CentOS/Ubuntu 常见路径；若 which soffice 不同，改这里或设环境变量覆盖
+    soffice-path: ${DOC_CONVERT_SOFFICE_PATH:/usr/bin/soffice}
+    # Alibaba Cloud Linux 默认 python3=3.6，过旧；建议装 python38 后用下面默认值/环境变量
+    python-bin: ${DOC_CONVERT_PYTHON_BIN:/usr/bin/python3.8}
+    # release.sh 会把脚本放到 APP_HOME；也可环境变量覆盖
+    pdf2docx-script: ${DOC_CONVERT_PDF2DOCX_SCRIPT:/var/app/my_common_util/pdf2docx_convert.py}
+    pdf2docx-enabled: true
+
+pdf:
+  split:
+    rate-limit-per-minute: 10
+
+feedback:
+  rate-limit-per-minute: 5

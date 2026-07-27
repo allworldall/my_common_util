@@ -1,3 +1,9 @@
+# 公共配置（所有环境共享）
+# 环境差异见：
+#   application-local.yaml  —— 本机开发/测试
+#   application-prod.yaml   —— 线上
+# 启动时通过 spring.profiles.active 选择（见 deploy/start.sh / systemd）
+
 spring:
   application:
     name: my_common_util
@@ -6,7 +12,7 @@ spring:
       max-file-size: 50MB
       max-request-size: 52MB
   # QQ 邮箱 SMTP：密码处填「授权码」（不是 QQ 登录密码）
-  # 获取：QQ邮箱网页版 → 设置 → 账户 → POP3/IMAP/SMTP → 开启服务并生成授权码
+  # 账号/授权码用环境变量注入，勿写进仓库
   mail:
     host: smtp.qq.com
     port: 465
@@ -34,15 +40,29 @@ pdf:
     max-file-size-bytes: 52428800   # 50MB
     max-page-span: 100             # 单次最多拆分页数
     rate-limit-per-minute: 10      # 同 IP 每分钟请求上限
-    api-token: ""                  # 非空时需在请求头带 X-Api-Token
+    api-token: ""                  # 非空时需在请求头带 X-Api-Token（/api/pdf/** 与 /api/doc/**）
   scan:
     max-file-size-bytes: 8388608   # 单张图片 8MB
     max-images: 10                 # 单次最多图片数
 
+# Word ↔ PDF
+# - Word→PDF：LibreOffice
+# - PDF→Word：优先 pdf2docx，失败再回退 LibreOffice
+doc:
+  convert:
+    max-file-size-bytes: 20971520  # 20MB
+    rate-limit-per-minute: 6
+    timeout-seconds: 90
+    soffice-path: ""               # 具体路径见 application-{profile}.yaml
+    python-bin: python3            # PDF→Word 用
+    pdf2docx-script: ""            # 空则自动探测
+    pdf2docx-enabled: true         # false 时 PDF→Word 只用 LibreOffice
+
+
 # 问题反馈 / 工具需求邮件
 feedback:
   enabled: true
-  to: 249191841@qq.com             # 接收反馈的邮箱
-  rate-limit-per-minute: 5         # 反馈接口单独限流（更严一点）
+  to: 249191841@qq.com
+  rate-limit-per-minute: 5
 
 # 日志目录可通过启动脚本 -DLOG_PATH 覆盖；GC 日志见 deploy/start.sh
