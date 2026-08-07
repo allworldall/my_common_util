@@ -23,6 +23,19 @@ window.TOOL_CATEGORIES = [
         },
       },
       {
+        id: "pdf-compress",
+        name: "PDF压缩",
+        desc: "三档质量缩小 PDF 体积",
+        href: "./tools/pdf-compress.html",
+        icon: "pdf-compress",
+        seo: {
+          title: "在线PDF压缩 - 缩小PDF体积保持清晰 | ToolKit",
+          description:
+            "免费在线PDF压缩工具：三档质量可选，在尽量保持图片字迹清晰的前提下缩小文件体积，适合传输受限场景。无需安装软件。",
+          keywords: "PDF压缩,在线PDF压缩,缩小PDF,PDF减小体积,PDF压缩工具",
+        },
+      },
+      {
         id: "word-pdf",
         name: "Word↔PDF",
         desc: "Word 与 PDF 互转（结果请核对）",
@@ -146,6 +159,19 @@ window.TOOL_CATEGORIES = [
           keywords: "MD5,MD5在线计算,文件MD5,MD5校验,文本MD5",
         },
       },
+      {
+        id: "http-request",
+        name: "HTTP请求模拟",
+        desc: "模拟发送 HTTP 请求",
+        href: "./tools/http-request.html",
+        icon: "http-request",
+        seo: {
+          title: "HTTP请求模拟 - 在线接口调试 | ToolKit",
+          description:
+            "免费在线HTTP请求模拟工具：支持 GET/POST/PUT/PATCH/DELETE，自定义请求头与请求体，服务端代理发送，方便接口联调。",
+          keywords: "HTTP请求,接口调试,API测试,Postman在线,HTTP模拟,在线发请求",
+        },
+      },
     ],
   },
   {
@@ -198,11 +224,11 @@ window.TOOL_CATEGORIES = [
 
 /** 首页 SEO（与 index.html meta 保持一致） */
 window.SITE_SEO = {
-  title: "ToolKit 在线工具集 - 免费PDF拆分/Word互转/OCR/JSON等",
+  title: "ToolKit 在线工具集 - 免费PDF拆分/压缩/Word互转/OCR/JSON等",
   description:
-    "免费在线工具箱：PDF拆分、Word与PDF互转、图片压缩、图片OCR文字识别、JSON格式化、时间戳转换、Base64、UUID、文本Diff等。开发联调与办公处理常用，多数工具本地处理、数据不上传。",
+    "免费在线工具箱：PDF拆分、PDF压缩、Word与PDF互转、图片压缩、图片OCR文字识别、JSON格式化、HTTP请求模拟、时间戳转换、Base64、UUID、文本Diff等。开发联调与办公处理常用，多数工具本地处理、数据不上传。",
   keywords:
-    "在线工具,工具集,PDF拆分,Word转PDF,PDF转Word,图片OCR,JSON格式化,时间戳转换,Base64,UUID生成,文本对比,ToolKit",
+    "在线工具,工具集,PDF拆分,PDF压缩,Word转PDF,PDF转Word,图片OCR,JSON格式化,HTTP请求,时间戳转换,Base64,UUID生成,文本对比,ToolKit",
 };
 
 /** 扁平工具列表，便于 sitemap / 相关推荐 */

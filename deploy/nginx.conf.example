@@ -1,38 +1,135 @@
-# 线上 Nginx 示例：托管前端静态资源，并把 /api 反代到 Spring Boot
+# 线上 Nginx（Alibaba Cloud Linux / RHEL 系）
 #
-# 使用前请改：
-# 1) root 指向本仓库 frontend 目录的实际路径（或你发布后的静态目录）
-# 2) server_name 改成你的域名
-# 3) proxy_pass 改成后端实际地址/端口
+# 放到：/etc/nginx/conf.d/my_common_util.conf
+# 启用：sudo nginx -t && sudo systemctl reload nginx
 
+limit_req_zone $binary_remote_addr zone=api_general:10m rate=30r/m;
+limit_req_zone $binary_remote_addr zone=api_heavy:10m rate=10r/m;
+limit_req_zone $binary_remote_addr zone=api_feedback:10m rate=5r/m;
+
+# HTTP → HTTPS（统一到裸域）
 server {
     listen 80;
-    server_name tools.example.com;
+    listen [::]:80;
+    server_name mytool.xin www.mytool.xin;
+    return 301 https://mytool.xin$request_uri;
+}
 
-    # 前端静态文件
-    root /var/www/my_common_util/frontend;
+# www → 裸域
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name www.mytool.xin;
+
+    ssl_certificate     /etc/nginx/ssl/www.mytool.xin.pem;
+    ssl_certificate_key /etc/nginx/ssl/www.mytool.xin.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    return 301 https://mytool.xin$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name mytool.xin;
+
+    ssl_certificate     /etc/nginx/ssl/www.mytool.xin.pem;
+    ssl_certificate_key /etc/nginx/ssl/www.mytool.xin.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    root /var/app/my_common_util/frontend;
     index index.html;
 
+    # 真 404，避免未知路径回落到首页
     location / {
-        try_files $uri $uri/ /index.html;
+        try_files $uri $uri/ =404;
     }
 
-    # SEO：确保可直接访问（不要被 try_files 误伤）
     location = /robots.txt { }
     location = /sitemap.xml { }
 
-    # 后端 API 反向代理
-    location /api/ {
+    location ^~ /api/doc/ {
+        limit_req zone=api_heavy burst=3 nodelay;
+        limit_req_status 429;
         proxy_pass http://127.0.0.1:8080;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-For $remote_addr;
         proxy_set_header X-Forwarded-Proto $scheme;
-
-        # 上传 PDF 需要更大的 body
         client_max_body_size 52m;
-
-        # 下载文件名等响应头透传
         proxy_pass_header Content-Disposition;
+        proxy_read_timeout 120s;
+    }
+
+    location ^~ /api/pdf/scan {
+        limit_req zone=api_heavy burst=3 nodelay;
+        limit_req_status 429;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 52m;
+        proxy_pass_header Content-Disposition;
+        proxy_read_timeout 120s;
+    }
+
+    location ^~ /api/pdf/compress {
+        limit_req zone=api_heavy burst=2 nodelay;
+        limit_req_status 429;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 110m;
+        proxy_pass_header Content-Disposition;
+        proxy_read_timeout 200s;
+    }
+
+    location ^~ /api/feedback {
+        limit_req zone=api_feedback burst=2 nodelay;
+        limit_req_status 429;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 52m;
+        proxy_pass_header Content-Disposition;
+        proxy_read_timeout 60s;
+    }
+
+    # HTTP 请求模拟代理：超时需覆盖后端 max-timeout-ms
+    location ^~ /api/http/ {
+        limit_req zone=api_general burst=8 nodelay;
+        limit_req_status 429;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 1m;
+        proxy_read_timeout 70s;
+    }
+
+    location /api/ {
+        limit_req zone=api_general burst=10 nodelay;
+        limit_req_status 429;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 52m;
+        proxy_pass_header Content-Disposition;
+        proxy_read_timeout 120s;
     }
 }

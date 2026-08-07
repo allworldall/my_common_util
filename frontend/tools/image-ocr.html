@@ -11,9 +11,11 @@
   <meta property="og:description" content="免费在线OCR：上传图片或粘贴截图，识别中英文文字。本地识别，图片不上传，适合提取聊天记录、文档文字。" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="zh_CN" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="canonical" href="__SITE_ORIGIN__/tools/image-ocr.html" />
+  <meta property="og:url" content="__SITE_ORIGIN__/tools/image-ocr.html" />
+  <meta property="og:image" content="__SITE_ORIGIN__/assets/og-share.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="../css/common.css" />
 </head>
 <body>
@@ -65,11 +67,29 @@
       <p class="status" id="status"></p>
       <p class="note">首次识别会下载语言包，稍等片刻；之后可离线使用。清晰的截图、扫描件效果更好。</p>
     </section>
+
+    <section class="faq-block" aria-labelledby="ocr-faq">
+      <h2 id="ocr-faq">常见问题</h2>
+      <details open>
+        <summary>识别在浏览器本地完成吗？</summary>
+        <p>是的，文字识别由浏览器内的 OCR 引擎完成，图片不会上传到本站服务器，更适合处理含隐私的截图。</p>
+      </details>
+      <details>
+        <summary>识别不准怎么办？</summary>
+        <p>尽量使用清晰、对比度高的图片；竖排、手写、严重倾斜或过小文字效果较差。可先裁剪目标区域再识别。</p>
+      </details>
+      <details>
+        <summary>支持哪些语言？</summary>
+        <p>默认「中文 + 英文」，也可切换为仅中文或仅英文。首次使用会下载对应语言包。</p>
+      </details>
+    </section>
   </main>
 
   <script src="../js/site-config.js"></script>
   <script src="../js/tools-config.js"></script>
   <script src="../js/seo.js"></script>
+  <script src="../js/api-config.js"></script>
+  <script src="../js/feedback.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <script src="./image-ocr.js"></script>
 </body>

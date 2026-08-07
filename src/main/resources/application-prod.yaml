@@ -1,6 +1,10 @@
 # 线上环境（spring.profiles.active=prod）
 # systemd 的 Environment=SPRING_PROFILES_ACTIVE=prod 启用本 profile
 
+server:
+  # 仅本机可访问；对外由 Nginx 反代，勿把 8080 暴露到公网
+  address: 127.0.0.1
+
 doc:
   convert:
     # RHEL/CentOS/Ubuntu 常见路径；若 which soffice 不同，改这里或设环境变量覆盖
@@ -14,6 +18,14 @@ doc:
 pdf:
   split:
     rate-limit-per-minute: 10
+  compress:
+    rate-limit-per-minute: 4
+    # RHEL/CentOS/Ubuntu 常见路径；可用环境变量覆盖
+    gs-path: ${PDF_COMPRESS_GS_PATH:/usr/bin/gs}
+
+http:
+  proxy:
+    rate-limit-per-minute: 20
 
 feedback:
   rate-limit-per-minute: 5

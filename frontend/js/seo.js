@@ -1,6 +1,6 @@
 /**
- * 页面 SEO 增强：canonical / og:url / JSON-LD / 相关工具内链
- * 标题与 description 已写在各 HTML 静态 meta 中（搜索引擎优先读静态标签）
+ * 页面 SEO 增强：canonical / og / JSON-LD / 相关工具内链 / ICP 页脚
+ * 标题与 description、静态 canonical 已写在各 HTML 中；此处补全并在本地开发时修正占位符。
  */
 (() => {
   const cfg = window.SITE_CONFIG || {};
@@ -36,13 +36,16 @@
     ? pathname.slice(0, -10) || "/"
     : pathname;
   const canonicalUrl = origin + canonicalPath;
+  const ogImage = origin + (cfg.ogImage || "/assets/og-share.jpg");
 
   upsertLink("canonical", canonicalUrl);
   upsertMeta("property", "og:url", canonicalUrl);
+  upsertMeta("property", "og:image", ogImage);
   upsertMeta("property", "og:site_name", cfg.siteNameFull || cfg.siteName || "ToolKit");
   upsertMeta("property", "og:locale", "zh_CN");
   upsertMeta("property", "og:type", "website");
-  upsertMeta("name", "twitter:card", "summary");
+  upsertMeta("name", "twitter:card", "summary_large_image");
+  upsertMeta("name", "twitter:image", ogImage);
 
   const title = document.title || "";
   const descEl = document.querySelector('meta[name="description"]');
@@ -104,10 +107,30 @@
         },
       };
 
-  const script = document.createElement("script");
-  script.type = "application/ld+json";
-  script.textContent = JSON.stringify(jsonLd);
-  document.head.appendChild(script);
+  if (!document.querySelector('script[type="application/ld+json"]')) {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.textContent = JSON.stringify(jsonLd);
+    document.head.appendChild(script);
+  }
+
+  const icp = (cfg.icp || "").trim();
+  if (icp) {
+    const host = isHome
+      ? document.querySelector(".home-footer")
+      : document.querySelector("main.page");
+    if (host && !document.querySelector(".site-icp")) {
+      const p = document.createElement("p");
+      p.className = "site-icp";
+      const a = document.createElement("a");
+      a.href = cfg.icpUrl || "https://beian.miit.gov.cn/";
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = icp;
+      p.appendChild(a);
+      host.appendChild(p);
+    }
+  }
 
   if (!isHome && tools.length) {
     const others = tools.filter((t) => !(t.href || "").endsWith(fileName));

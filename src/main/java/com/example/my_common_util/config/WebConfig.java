@@ -31,7 +31,12 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "OPTIONS")
                 .allowedHeaders("*")
-                .exposedHeaders("Content-Disposition")
+                .exposedHeaders(
+                        "Content-Disposition",
+                        "X-Original-Size",
+                        "X-Output-Size",
+                        "X-Compress-Skipped",
+                        "X-Compress-Quality")
                 .allowCredentials(false)
                 .maxAge(3600);
     }
@@ -41,8 +46,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(accessLogInterceptor)
                 .addPathPatterns("/api/**");
         registry.addInterceptor(apiTokenInterceptor)
-                .addPathPatterns("/api/pdf/**", "/api/doc/**");
+                .addPathPatterns("/api/pdf/**", "/api/doc/**", "/api/http/**");
         registry.addInterceptor(rateLimitInterceptor)
-                .addPathPatterns("/api/pdf/**", "/api/doc/**", "/api/feedback/**");
+                .addPathPatterns("/api/pdf/**", "/api/doc/**", "/api/feedback/**", "/api/http/**");
     }
 }

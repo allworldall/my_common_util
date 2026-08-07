@@ -19,7 +19,7 @@ public class PdfSplitProperties {
     /** 同一 IP 每分钟最多请求次数 */
     private int rateLimitPerMinute = 10;
 
-    /** 简易访问令牌，为空则不校验；请求头 X-Api-Token 需匹配 */
+    /** 简易访问令牌，为空则不校验；请求头 X-Api-Token 需匹配（/api/pdf/**、/api/doc/**、/api/http/**） */
     private String apiToken = "";
 
     public long getMaxFileSizeBytes() {

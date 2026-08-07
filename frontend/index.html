@@ -3,18 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ToolKit 在线工具集 - 免费PDF拆分/Word互转/OCR/JSON等</title>
-  <meta name="description" content="免费在线工具箱：PDF拆分、Word与PDF互转、图片压缩、图片OCR文字识别、JSON格式化、时间戳转换、Base64、UUID、文本Diff等。开发联调与办公处理常用，多数工具本地处理、数据不上传。" />
-  <meta name="keywords" content="在线工具,工具集,PDF拆分,Word转PDF,PDF转Word,图片OCR,JSON格式化,时间戳转换,Base64,UUID生成,文本对比,ToolKit" />
+  <title>ToolKit 在线工具集 - 免费PDF拆分/压缩/Word互转/OCR/JSON等</title>
+  <meta name="description" content="免费在线工具箱：PDF拆分、PDF压缩、Word与PDF互转、图片压缩、图片OCR文字识别、JSON格式化、HTTP请求模拟、时间戳转换、Base64、UUID、文本Diff等。开发联调与办公处理常用，多数工具本地处理、数据不上传。" />
+  <meta name="keywords" content="在线工具,工具集,PDF拆分,PDF压缩,Word转PDF,PDF转Word,图片OCR,JSON格式化,HTTP请求,时间戳转换,Base64,UUID生成,文本对比,ToolKit" />
   <meta name="robots" content="index,follow" />
   <meta name="author" content="ToolKit" />
-  <meta property="og:title" content="ToolKit 在线工具集 - 免费PDF拆分/Word互转/OCR/JSON等" />
-  <meta property="og:description" content="免费在线工具箱：PDF拆分、Word与PDF互转、图片压缩、图片OCR、JSON格式化、时间戳转换等，多数本地处理。" />
+  <meta property="og:title" content="ToolKit 在线工具集 - 免费PDF拆分/压缩/Word互转/OCR/JSON等" />
+  <meta property="og:description" content="免费在线工具箱：PDF拆分、PDF压缩、Word与PDF互转、图片压缩、图片OCR、JSON格式化、时间戳转换等，多数本地处理。" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="zh_CN" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="canonical" href="__SITE_ORIGIN__/" />
+  <meta property="og:url" content="__SITE_ORIGIN__/" />
+  <meta property="og:image" content="__SITE_ORIGIN__/assets/og-share.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="./css/common.css" />
   <script>
     // 刷新后不要恢复到底部，始终从顶部开始
@@ -39,6 +41,7 @@
     <div class="home-footer">
       <button type="button" class="feedback-entry" id="feedbackOpen">问题反馈</button>
       <button type="button" class="feedback-entry" id="toolRequestOpen">您还需要哪些工具</button>
+      <!-- ICP：在 js/site-config.js 填写 icp 后由 seo.js 注入 -->
     </div>
   </div>
 
@@ -64,6 +67,10 @@
         <label class="field">
           <span>您的联系方式</span>
           <input id="feedbackContact" type="text" placeholder="微信 / 手机号 / 邮箱" />
+        </label>
+        <label class="hp-field" aria-hidden="true">
+          <span>网站</span>
+          <input id="feedbackWebsite" type="text" name="website" tabindex="-1" autocomplete="off" />
         </label>
         <p class="status" id="feedbackStatus"></p>
         <div class="modal-actions">
@@ -111,6 +118,10 @@
           <span>您的联系方式</span>
           <input id="toolRequestContact" type="text" placeholder="微信 / 手机号 / 邮箱" />
         </label>
+        <label class="hp-field" aria-hidden="true">
+          <span>网站</span>
+          <input id="toolRequestWebsite" type="text" name="website" tabindex="-1" autocomplete="off" />
+        </label>
         <p class="status" id="toolRequestStatus"></p>
         <div class="modal-actions">
           <button type="button" class="primary" id="toolRequestSubmit">提交建议</button>
@@ -134,6 +145,7 @@
   <nav class="seo-tool-index" aria-label="全部工具列表">
     <ul>
       <li><a href="./tools/pdf-split.html">在线PDF拆分</a></li>
+      <li><a href="./tools/pdf-compress.html">在线PDF压缩</a></li>
       <li><a href="./tools/word-pdf.html">Word与PDF互转</a></li>
       <li><a href="./tools/image.html">在线图片压缩改尺寸</a></li>
       <li><a href="./tools/image-scan.html">照片转扫描件PDF</a></li>
@@ -143,6 +155,7 @@
       <li><a href="./tools/base64.html">Base64编码解码</a></li>
       <li><a href="./tools/url-codec.html">URL编码解码</a></li>
       <li><a href="./tools/md5.html">MD5在线计算</a></li>
+      <li><a href="./tools/http-request.html">HTTP请求模拟</a></li>
       <li><a href="./tools/uuid.html">UUID在线生成</a></li>
       <li><a href="./tools/diff.html">文本对比Diff</a></li>
       <li><a href="./tools/list-convert.html">列表格式转换</a></li>

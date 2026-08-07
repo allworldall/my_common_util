@@ -38,6 +38,8 @@ public class FeedbackService {
     private static final int MAX_SCENARIO_LEN = 1000;
     private static final int MAX_USAGE_LEN = 1000;
     private static final int MAX_CONTACT_LEN = 100;
+    private static final int MAX_SOURCE_TOOL_LEN = 80;
+    private static final int MAX_SOURCE_PAGE_LEN = 200;
     private static final int MAX_IMAGE_COUNT = 3;
     private static final int MAX_IMAGE_BYTES = 5 * 1024 * 1024;
     private static final Pattern IMAGE_MARKER = Pattern.compile("\\[图片(\\d+)\\]");
@@ -69,6 +71,7 @@ public class FeedbackService {
 
         String trimmedContent = request.getContent() == null ? "" : request.getContent().trim();
         String trimmedContact = request.getContact() == null ? "" : request.getContact().trim();
+        String sourceLabel = buildSourceLabel(request.getSourceTool(), request.getSourcePage());
 
         if (!StringUtils.hasText(trimmedContent)) {
             throw new IllegalArgumentException("请填写问题描述");
@@ -96,16 +99,18 @@ public class FeedbackService {
             MimeMessage message = mailSender.createMimeMessage();
             message.setFrom(new InternetAddress(mailUsername));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(feedbackProperties.getTo()));
-            message.setSubject("【工具集平台】问题反馈", "UTF-8");
+            message.setSubject(buildProblemSubject(sourceLabel), "UTF-8");
 
             if (images.isEmpty()) {
-                message.setText(buildProblemPlainText(trimmedContent, trimmedContact, 0), "UTF-8");
+                message.setText(buildProblemPlainText(trimmedContent, trimmedContact, sourceLabel, 0), "UTF-8");
             } else {
                 // multipart/related：HTML 正文 + 内嵌图；外层 mixed 再挂附件，兼容 QQ 邮箱
                 MimeMultipart related = new MimeMultipart("related");
 
                 MimeBodyPart htmlPart = new MimeBodyPart();
-                htmlPart.setContent(buildProblemHtml(trimmedContent, trimmedContact, images), "text/html; charset=UTF-8");
+                htmlPart.setContent(
+                        buildProblemHtml(trimmedContent, trimmedContact, sourceLabel, images),
+                        "text/html; charset=UTF-8");
                 related.addBodyPart(htmlPart);
 
                 for (int i = 0; i < images.size(); i++) {
@@ -139,7 +144,11 @@ public class FeedbackService {
             }
 
             mailSender.send(message);
-            log.info("问题反馈邮件已发送：images={}, contactLen={}", images.size(), trimmedContact.length());
+            log.info(
+                    "问题反馈邮件已发送：source={}, images={}, contactLen={}",
+                    sourceLabel,
+                    images.size(),
+                    trimmedContact.length());
         } catch (IllegalArgumentException | IllegalStateException e) {
             throw e;
         } catch (Exception e) {
@@ -260,9 +269,45 @@ public class FeedbackService {
         }
     }
 
-    private static String buildProblemPlainText(String content, String contact, int imageCount) {
+    private String buildSourceLabel(String sourceTool, String sourcePage) {
+        String tool = sourceTool == null ? "" : sourceTool.trim();
+        String page = sourcePage == null ? "" : sourcePage.trim();
+        if (tool.length() > MAX_SOURCE_TOOL_LEN) {
+            tool = tool.substring(0, MAX_SOURCE_TOOL_LEN);
+        }
+        if (page.length() > MAX_SOURCE_PAGE_LEN) {
+            page = page.substring(0, MAX_SOURCE_PAGE_LEN);
+        }
+        if (!StringUtils.hasText(tool) && !StringUtils.hasText(page)) {
+            return "首页";
+        }
+        if (!StringUtils.hasText(tool)) {
+            return page;
+        }
+        if (!StringUtils.hasText(page) || "首页".equals(page)) {
+            return tool;
+        }
+        return tool + "（" + page + "）";
+    }
+
+    private static String buildProblemSubject(String sourceLabel) {
+        if (!StringUtils.hasText(sourceLabel) || "首页".equals(sourceLabel)) {
+            return "【工具集平台】问题反馈";
+        }
+        // 主题里只保留工具名，路径放在正文
+        String toolOnly = sourceLabel;
+        int idx = sourceLabel.indexOf('（');
+        if (idx > 0) {
+            toolOnly = sourceLabel.substring(0, idx);
+        }
+        return "【工具集平台】问题反馈 - " + toolOnly;
+    }
+
+    private static String buildProblemPlainText(
+            String content, String contact, String sourceLabel, int imageCount) {
         StringBuilder sb = new StringBuilder();
         sb.append("收到一条新的问题反馈：\n\n");
+        sb.append("【反馈来源】\n").append(sourceLabel).append("\n\n");
         sb.append("【问题描述】\n");
         sb.append(IMAGE_MARKER.matcher(content).replaceAll(mr -> "\n（见附件：图片" + mr.group(1) + "）\n"));
         sb.append("\n\n【用户联系方式】\n").append(contact);
@@ -281,7 +326,8 @@ public class FeedbackService {
                 + "——系统自动发送";
     }
 
-    private static String buildProblemHtml(String content, String contact, List<DecodedImage> images) {
+    private static String buildProblemHtml(
+            String content, String contact, String sourceLabel, List<DecodedImage> images) {
         String escaped = escapeHtml(content);
         Matcher matcher = IMAGE_MARKER.matcher(escaped);
         StringBuffer body = new StringBuffer();
@@ -302,6 +348,8 @@ public class FeedbackService {
 
         return "<div style=\"font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#152033;line-height:1.6;\">"
                 + "<p>收到一条新的问题反馈：</p>"
+                + "<p><strong>【反馈来源】</strong><br>"
+                + escapeHtml(sourceLabel) + "</p>"
                 + "<p><strong>【问题描述】</strong></p>"
                 + "<div>" + body.toString().replace("\n", "<br>") + "</div>"
                 + "<p style=\"margin-top:16px;\"><strong>【用户联系方式】</strong><br>"

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>在线PDF压缩 - 缩小PDF体积保持清晰 | ToolKit</title>
+  <meta name="description" content="免费在线PDF压缩工具：三档质量可选，在尽量保持图片字迹清晰的前提下缩小文件体积，适合传输受限场景。无需安装软件。" />
+  <meta name="keywords" content="PDF压缩,在线PDF压缩,缩小PDF,PDF减小体积,PDF压缩工具" />
+  <meta name="robots" content="index,follow" />
+  <meta property="og:title" content="在线PDF压缩 - 缩小PDF体积保持清晰 | ToolKit" />
+  <meta property="og:description" content="免费在线PDF压缩：高质量 / 均衡 / 极限三档，尽量清晰且尽量小，适合大文件传输受限场景。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="zh_CN" />
+  <link rel="canonical" href="__SITE_ORIGIN__/tools/pdf-compress.html" />
+  <meta property="og:url" content="__SITE_ORIGIN__/tools/pdf-compress.html" />
+  <meta property="og:image" content="__SITE_ORIGIN__/assets/og-share.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page narrow">
+    <nav class="top-nav">
+      <a href="../index.html">← 返回工具集</a>
+    </nav>
+
+    <header class="header">
+      <h1>PDF压缩</h1>
+      <p>缩小 PDF 体积，三档质量可选，压缩后保存到本地</p>
+    </header>
+
+    <section class="card">
+      <div class="upload-zone" id="uploadZone">
+        <input id="fileInput" type="file" accept="application/pdf,.pdf" hidden />
+        <p class="upload-title">点击或拖拽 PDF 到此处</p>
+        <p class="upload-hint" id="fileHint">支持最大 100M</p>
+      </div>
+
+      <div class="meta" id="fileMeta" hidden>
+        <span id="metaName">-</span>
+        <span id="metaSize">大小：-</span>
+      </div>
+
+      <label class="field">
+        <span>压缩质量</span>
+        <select id="quality">
+          <option value="high">高质量（约 200 DPI，更清晰）</option>
+          <option value="balanced" selected>均衡（约 144 DPI，推荐）</option>
+          <option value="small">极限（约 96 DPI，尽量小）</option>
+        </select>
+      </label>
+
+      <p class="convert-notice" id="compressTip">
+        体积主要来自图片。扫描件/图片型 PDF 压缩空间通常更大；纯文字 PDF 可能几乎压不动。压缩后请打开核对字迹是否清晰。
+      </p>
+
+      <button id="compressBtn" class="primary" type="button" disabled>开始压缩</button>
+      <p class="status" id="status"></p>
+    </section>
+
+    <section class="faq-block" aria-labelledby="pdf-compress-faq">
+      <h2 id="pdf-compress-faq">常见问题</h2>
+      <details open>
+        <summary>三档质量怎么选？</summary>
+        <p>日常传文件选「均衡」；需要打印或小字多选「高质量」；体积卡得很死再试「极限」。极限档可能让细小字迹变糊。</p>
+      </details>
+      <details>
+        <summary>压缩后为什么几乎没变小？</summary>
+        <p>纯文字或已高度压缩的 PDF，再压收益有限。若压缩后反而更大，会直接返回原文件。</p>
+      </details>
+      <details>
+        <summary>文件会长期保存在服务器吗？</summary>
+        <p>处理完成后立即返回下载，临时文件会清理，不会做长期存储；请勿上传含高度敏感信息的文件。</p>
+      </details>
+      <details>
+        <summary>支持多大的 PDF？</summary>
+        <p>单文件最大约 100MB。大文件可能需要数十秒，请耐心等待，不要重复提交。</p>
+      </details>
+    </section>
+  </main>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-panel">
+      <h2>保存压缩结果</h2>
+      <p id="modalDesc">文件已生成，请选择保存位置。</p>
+      <p class="convert-notice compact" id="modalTip"></p>
+      <p class="status" id="modalStatus" hidden></p>
+      <div class="modal-actions">
+        <button id="saveAsBtn" class="primary" type="button">选择位置保存</button>
+        <button id="downloadBtn" class="secondary" type="button">浏览器下载</button>
+        <button id="cancelBtn" class="ghost" type="button">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/site-config.js"></script>
+  <script src="../js/tools-config.js"></script>
+  <script src="../js/seo.js"></script>
+  <script src="../js/api-config.js"></script>
+  <script src="../js/feedback.js"></script>
+  <script src="./pdf-compress.js"></script>
+</body>
+</html>

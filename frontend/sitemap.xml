@@ -12,6 +12,11 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>__SITE_ORIGIN__/tools/pdf-compress.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>__SITE_ORIGIN__/tools/word-pdf.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -55,6 +60,11 @@
     <loc>__SITE_ORIGIN__/tools/md5.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>__SITE_ORIGIN__/tools/http-request.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>__SITE_ORIGIN__/tools/uuid.html</loc>

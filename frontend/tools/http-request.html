@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTTP请求模拟 - 在线接口调试 | ToolKit</title>
+  <meta name="description" content="免费在线HTTP请求模拟工具：支持 GET/POST/PUT/PATCH/DELETE，自定义请求头与请求体，服务端代理发送，方便接口联调。" />
+  <meta name="keywords" content="HTTP请求,接口调试,API测试,Postman在线,HTTP模拟,在线发请求" />
+  <meta name="robots" content="index,follow" />
+  <meta property="og:title" content="HTTP请求模拟 - 在线接口调试 | ToolKit" />
+  <meta property="og:description" content="免费在线HTTP请求模拟工具：支持 GET/POST/PUT/PATCH/DELETE，自定义请求头与请求体，服务端代理发送，方便接口联调。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="zh_CN" />
+  <link rel="canonical" href="__SITE_ORIGIN__/tools/http-request.html" />
+  <meta property="og:url" content="__SITE_ORIGIN__/tools/http-request.html" />
+  <meta property="og:image" content="__SITE_ORIGIN__/assets/og-share.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page">
+    <nav class="top-nav"><a href="../index.html">← 返回工具集</a></nav>
+    <header class="header">
+      <h1>HTTP请求模拟</h1>
+      <p>类似 Postman：自定义方法、URL、请求头与请求体，发送并查看响应</p>
+    </header>
+
+    <section class="card">
+      <div class="http-url-row">
+        <label class="field http-method-field">
+          <span>方法</span>
+          <select id="method" aria-label="HTTP 方法">
+            <option value="GET" selected>GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+            <option value="HEAD">HEAD</option>
+            <option value="OPTIONS">OPTIONS</option>
+          </select>
+        </label>
+        <label class="field http-url-field">
+          <span>URL</span>
+          <input id="url" type="text" placeholder="https://httpbin.org/get" autocomplete="off" spellcheck="false" />
+        </label>
+      </div>
+
+      <div class="form-row">
+        <label class="field">
+          <span>发送方式</span>
+          <select id="mode" aria-label="发送方式">
+            <option value="proxy" selected>服务端代理（推荐，可绕过 CORS）</option>
+            <option value="browser">浏览器直连（受 CORS 限制）</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>超时（毫秒）</span>
+          <input id="timeoutMs" type="number" min="1000" max="60000" step="1000" value="15000" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span>请求头（每行一个，格式 Key: Value）</span>
+        <textarea id="headers" class="http-headers" placeholder="Content-Type: application/json&#10;Accept: application/json"></textarea>
+      </label>
+
+      <label class="field">
+        <span>请求体</span>
+        <textarea id="body" placeholder='{"hello":"world"}'></textarea>
+      </label>
+
+      <div class="btn-row">
+        <button type="button" class="primary" id="btnSend">发送</button>
+        <button type="button" class="secondary" id="btnCopyBody">复制响应体</button>
+        <button type="button" class="ghost" id="btnClear">清空</button>
+      </div>
+
+      <p class="status" id="status"></p>
+      <p class="note">服务端代理禁止访问本机与内网地址；不自动跟随重定向。浏览器直连时目标站需允许跨域。</p>
+    </section>
+
+    <section class="card" id="responseCard">
+      <div class="http-meta" id="responseMeta" hidden>
+        <span>状态 <strong id="respStatus">-</strong></span>
+        <span>耗时 <strong id="respTime">-</strong></span>
+        <span>大小 <strong id="respSize">-</strong></span>
+      </div>
+
+      <label class="field">
+        <span>响应头</span>
+        <textarea id="respHeaders" class="http-headers" readonly placeholder="发送后显示"></textarea>
+      </label>
+
+      <label class="field">
+        <span>响应体</span>
+        <textarea id="respBody" readonly placeholder="发送后显示"></textarea>
+      </label>
+    </section>
+  </main>
+  <script src="../js/site-config.js"></script>
+  <script src="../js/tools-config.js"></script>
+  <script src="../js/seo.js"></script>
+  <script src="../js/api-config.js"></script>
+  <script src="../js/feedback.js"></script>
+  <script src="./http-request.js"></script>
+</body>
+</html>

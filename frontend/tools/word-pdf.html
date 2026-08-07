@@ -4,16 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Word转PDF / PDF转Word - 在线互转 | ToolKit</title>
-  <meta name="description" content="免费在线 Word 与 PDF 互转：支持 doc/docx 转 PDF、PDF 转 Word，上传后即可下载，适合合同、报告格式转换。" />
+  <meta name="description" content="免费在线 Word 与 PDF 互转：支持 doc/docx 转 PDF、PDF 转 Word，上传后即可下载。转换后请自行核对版式与内容，适合合同、报告格式转换。" />
   <meta name="keywords" content="Word转PDF,PDF转Word,docx转PDF,在线Word转PDF,PDF转docx" />
   <meta name="robots" content="index,follow" />
   <meta property="og:title" content="Word转PDF / PDF转Word - 在线互转 | ToolKit" />
-  <meta property="og:description" content="免费在线 Word 与 PDF 互转：支持 doc/docx 转 PDF、PDF 转 Word，上传后即可下载，适合合同、报告格式转换。" />
+  <meta property="og:description" content="免费在线 Word 与 PDF 互转：支持 doc/docx 转 PDF、PDF 转 Word。转换后请自行核对版式与内容。" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="zh_CN" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="canonical" href="__SITE_ORIGIN__/tools/word-pdf.html" />
+  <meta property="og:url" content="__SITE_ORIGIN__/tools/word-pdf.html" />
+  <meta property="og:image" content="__SITE_ORIGIN__/assets/og-share.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="../css/common.css" />
 </head>
 <body>
@@ -52,6 +54,22 @@
       <button id="convertBtn" class="primary" type="button" disabled>开始转换</button>
       <p class="status" id="status"></p>
     </section>
+
+    <section class="faq-block" aria-labelledby="word-pdf-faq">
+      <h2 id="word-pdf-faq">常见问题</h2>
+      <details open>
+        <summary>支持哪些格式？</summary>
+        <p>Word→PDF 支持 .doc / .docx；PDF→Word 输出为 .docx。复杂版式、扫描件 PDF 保真度可能有限，转换后请自行核对。</p>
+      </details>
+      <details>
+        <summary>中文会乱码吗？</summary>
+        <p>服务器已配置常见中文字体。若个别字体缺失，个别字形可能显示异常，可用本机字体另存后再转一次。</p>
+      </details>
+      <details>
+        <summary>转换要多久？</summary>
+        <p>一般数十秒内完成；高峰期或大文件可能排队，请耐心等待，不要重复提交。</p>
+      </details>
+    </section>
   </main>
 
   <div class="modal" id="modal" hidden>
@@ -72,6 +90,7 @@
   <script src="../js/tools-config.js"></script>
   <script src="../js/seo.js"></script>
   <script src="../js/api-config.js"></script>
+  <script src="../js/feedback.js"></script>
   <script src="./word-pdf.js"></script>
 </body>
 </html>
