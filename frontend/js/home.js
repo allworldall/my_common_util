@@ -11,6 +11,8 @@
   const ICONS = {
     "pdf-split": `
       <svg viewBox="0 0 64 64" width="36" height="36"><rect x="12" y="8" width="28" height="38" rx="3" fill="#fff" stroke="currentColor" stroke-width="2.2"/><path d="M40 16h10v32a3 3 0 0 1-3 3H28" fill="#e8f1ff" stroke="currentColor" stroke-width="2.2"/><path d="M19 22h12M19 29h12M19 36h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M34 46l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    "pdf-compress": `
+      <svg viewBox="0 0 64 64" width="36" height="36"><rect x="14" y="10" width="28" height="36" rx="3" fill="#fff" stroke="currentColor" stroke-width="2.2"/><path d="M42 18h8v28a3 3 0 0 1-3 3H30" fill="#e8f1ff" stroke="currentColor" stroke-width="2.2"/><path d="M20 24h12M20 31h10M20 38h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M48 40v10M43 45h10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>`,
     "word-pdf": `
       <svg viewBox="0 0 64 64" width="36" height="36"><rect x="8" y="14" width="20" height="28" rx="3" fill="#fff" stroke="currentColor" stroke-width="2"/><rect x="36" y="14" width="20" height="28" rx="3" fill="#e8f1ff" stroke="currentColor" stroke-width="2"/><path d="M13 22h10M13 28h10M13 34h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M41 22h10M41 28h10M41 34h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M30 28h4M32 25l4 3-4 3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
     image: `
@@ -29,6 +31,8 @@
       <svg viewBox="0 0 64 64" width="36" height="36"><path d="M26 38a12 12 0 0 1 0-17l5-5a12 12 0 1 1 17 17l-3 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M38 26a12 12 0 0 1 0 17l-5 5a12 12 0 1 1-17-17l3-3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>`,
     md5: `
       <svg viewBox="0 0 64 64" width="36" height="36"><rect x="10" y="16" width="44" height="32" rx="8" fill="#e8f1ff" stroke="currentColor" stroke-width="2.2"/><text x="32" y="38" text-anchor="middle" font-size="13" font-family="ui-monospace,monospace" font-weight="700" fill="currentColor">MD5</text></svg>`,
+    "http-request": `
+      <svg viewBox="0 0 64 64" width="36" height="36"><rect x="10" y="14" width="44" height="36" rx="8" fill="#e8f1ff" stroke="currentColor" stroke-width="2.2"/><path d="M20 28h10l4-8 6 16 4-8h10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M42 40h8M46 36v8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`,
     uuid: `
       <svg viewBox="0 0 64 64" width="36" height="36"><rect x="12" y="18" width="40" height="28" rx="8" fill="#e8f1ff" stroke="currentColor" stroke-width="2.2"/><path d="M20 32h24M28 26v12M36 26v12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`,
     diff: `

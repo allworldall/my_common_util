@@ -9,8 +9,8 @@ spring:
     name: my_common_util
   servlet:
     multipart:
-      max-file-size: 50MB
-      max-request-size: 52MB
+      max-file-size: 105MB
+      max-request-size: 110MB
   # QQ 邮箱 SMTP：密码处填「授权码」（不是 QQ 登录密码）
   # 账号/授权码用环境变量注入，勿写进仓库
   mail:
@@ -31,8 +31,8 @@ spring:
 server:
   port: 8080
   tomcat:
-    max-http-form-post-size: 30MB
-    max-swallow-size: 30MB
+    max-http-form-post-size: 110MB
+    max-swallow-size: 110MB
 
 # PDF 相关配置
 pdf:
@@ -40,10 +40,15 @@ pdf:
     max-file-size-bytes: 52428800   # 50MB
     max-page-span: 100             # 单次最多拆分页数
     rate-limit-per-minute: 10      # 同 IP 每分钟请求上限
-    api-token: ""                  # 非空时需在请求头带 X-Api-Token（/api/pdf/** 与 /api/doc/**）
+    api-token: ""                  # 非空时需在请求头带 X-Api-Token（/api/pdf/**、/api/doc/**、/api/http/**）
   scan:
     max-file-size-bytes: 8388608   # 单张图片 8MB
     max-images: 10                 # 单次最多图片数
+  compress:
+    max-file-size-bytes: 104857600 # 100MB
+    rate-limit-per-minute: 4
+    timeout-seconds: 180
+    gs-path: ""                    # 空则自动探测；具体路径见 application-prod.yaml
 
 # Word ↔ PDF
 # - Word→PDF：LibreOffice
@@ -58,6 +63,15 @@ doc:
     pdf2docx-script: ""            # 空则自动探测
     pdf2docx-enabled: true         # false 时 PDF→Word 只用 LibreOffice
 
+
+# HTTP 请求模拟（服务端代理，防 SSRF：禁内网/本机）
+http:
+  proxy:
+    rate-limit-per-minute: 20
+    default-timeout-ms: 15000
+    max-timeout-ms: 60000
+    max-request-body-bytes: 262144   # 256KB
+    max-response-body-bytes: 524288  # 512KB（超出截断）
 
 # 问题反馈 / 工具需求邮件
 feedback:

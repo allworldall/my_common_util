@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.example.my_common_util.config.FeedbackProperties;
+import com.example.my_common_util.config.HttpProxyProperties;
+import com.example.my_common_util.config.PdfCompressProperties;
 import com.example.my_common_util.config.PdfSplitProperties;
 import com.example.my_common_util.config.WordPdfProperties;
 
@@ -22,17 +24,23 @@ import jakarta.servlet.http.HttpServletResponse;
 public class RateLimitInterceptor implements HandlerInterceptor {
 
     private final PdfSplitProperties pdfProperties;
+    private final PdfCompressProperties pdfCompressProperties;
     private final WordPdfProperties wordPdfProperties;
     private final FeedbackProperties feedbackProperties;
+    private final HttpProxyProperties httpProxyProperties;
     private final Map<String, WindowCounter> counters = new ConcurrentHashMap<>();
 
     public RateLimitInterceptor(
             PdfSplitProperties pdfProperties,
+            PdfCompressProperties pdfCompressProperties,
             WordPdfProperties wordPdfProperties,
-            FeedbackProperties feedbackProperties) {
+            FeedbackProperties feedbackProperties,
+            HttpProxyProperties httpProxyProperties) {
         this.pdfProperties = pdfProperties;
+        this.pdfCompressProperties = pdfCompressProperties;
         this.wordPdfProperties = wordPdfProperties;
         this.feedbackProperties = feedbackProperties;
+        this.httpProxyProperties = httpProxyProperties;
     }
 
     @Override
@@ -51,6 +59,12 @@ public class RateLimitInterceptor implements HandlerInterceptor {
         } else if (path.startsWith("/api/doc")) {
             limit = wordPdfProperties.getRateLimitPerMinute();
             bucket = "doc";
+        } else if (path.startsWith("/api/http")) {
+            limit = httpProxyProperties.getRateLimitPerMinute();
+            bucket = "http";
+        } else if (path.startsWith("/api/pdf/compress")) {
+            limit = pdfCompressProperties.getRateLimitPerMinute();
+            bucket = "pdf-compress";
         } else {
             limit = pdfProperties.getRateLimitPerMinute();
             bucket = "pdf";

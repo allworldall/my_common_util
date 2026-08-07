@@ -37,8 +37,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleOther(Exception ex) {
         log.error("未处理异常", ex);
-        String message = ex.getMessage() != null ? ex.getMessage() : "服务器内部错误";
-        return error(HttpStatus.INTERNAL_SERVER_ERROR, message);
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, "服务器内部错误，请稍后重试");
     }
 
     private ResponseEntity<Map<String, Object>> error(HttpStatus status, String message) {

@@ -71,12 +71,20 @@
    ```
    脚本路径一般不用配：本机跑在仓库根目录时会自动找到 `deploy/pdf2docx_convert.py`。
 
-4. 需要强制指定环境时：
+4. **测 PDF 压缩前**，本机需安装 Ghostscript：
+   ```bash
+   # macOS
+   brew install ghostscript
+   gs --version
+   ```
+   一般能自动探测；若找不到可在本地 profile 配 `pdf.compress.gs-path`。
+
+5. 需要强制指定环境时：
    ```bash
    SPRING_PROFILES_ACTIVE=local ./deploy/start.sh
    ```
 
-5. 自测通过后再发布。
+6. 自测通过后再发布。
 
 ---
 
@@ -170,6 +178,28 @@ ssh -p 22 webuser@你的服务器IP
   ```
   改完环境变量后 `sudo systemctl restart my-common-util`。  
   成功日志会出现：`PDF→Word 使用 pdf2docx 完成`；若库未装好会 WARN 后回退 LibreOffice。
+
+- Ghostscript（**PDF 压缩**；`pdf.compress` 依赖 `gs`）
+  ```bash
+  # Debian / Ubuntu
+  sudo apt-get install -y ghostscript
+  # CentOS / RHEL / Alma / Rocky / OpenCloudOS / Alibaba Cloud Linux
+  sudo yum install -y ghostscript
+  # 较新的 Fedora / RHEL 系
+  sudo dnf install -y ghostscript
+
+  # 安装后确认
+  gs --version
+  which gs
+  ```
+  线上路径写在 `application-prod.yaml`（默认 `/usr/bin/gs`）。  
+  若 `which gs` 不是这个路径，可改配置或在 `/etc/service_env/my_common_util` 设：
+  ```bash
+  PDF_COMPRESS_GS_PATH=/实际路径/gs
+  ```
+  **本机开发**：`brew install ghostscript`，一般能自动探测到。  
+  **注意**：大文件压缩偏耗 CPU/内存，与 Word 转换类似，建议控制并发（服务端已串行化）。
+
 - 目录（属主交给部署用户，避免再次出现 403）：
   ```bash
   sudo mkdir -p /var/app/my_common_util/logs
@@ -226,10 +256,34 @@ Environment=SPRING_PROFILES_ACTIVE=prod
 
 ### 5. 服务器配 Nginx
 
-参考 `deploy/nginx.conf.example`，改 `server_name` / 路径后启用，并 `nginx -t && systemctl reload nginx`。
+本仓库服务器为 Alibaba Cloud Linux / RHEL 系：Nginx **只加载** `/etc/nginx/conf.d/*.conf`，**不要**用 Debian 的 `sites-available` / `sites-enabled`（即使建了也不会生效，除非改 `nginx.conf` 去 include）。
+
+1. 申请域名证书（阿里云免费 DV 即可），放到例如 `/etc/nginx/ssl/`。
+2. 参考 `deploy/nginx.conf.example`，改 `server_name` / 证书路径 / `root` 后拷到服务器：
+   ```bash
+   # 本机
+   scp deploy/nginx.conf.example webuser@服务器:/tmp/my_common_util.conf
+   # 服务器
+   sudo cp /tmp/my_common_util.conf /etc/nginx/conf.d/my_common_util.conf
+   sudo nginx -t && sudo systemctl reload nginx
+   ```
+   示例配置已包含：HTTPS、www→裸域、真 404、安全响应头、`/api` 限流。  
+   **PDF 压缩**路径 `/api/pdf/compress` 单独放宽到 `client_max_body_size 110m`、超时约 200s；若服务器上是旧版 nginx 配置，发版后请同步 `nginx.conf.example` 再 `nginx -t && reload`。
+3. 阿里云安全组放行 **TCP 80 / 443**，**不要**对公网开放 8080（Java 在 prod 绑定 `127.0.0.1`）。
+4. 大陆机房域名需完成 ICP 备案；备案通过后在 `frontend/js/site-config.js` 填写 `icp`（如 `浙ICP备xxxxxxxx号`），再发版。
+5. 验证：
+   ```bash
+   sudo ss -lntp | grep -E ':80|:443'
+   curl -I https://你的域名
+   curl -I http://你的域名          # 应 301 到 https://裸域
+   curl -I https://www.你的域名     # 应 301 到 https://裸域
+   curl -I https://你的域名/not-exist  # 应 404
+   ```
+
+`release.sh` **不会**改 Nginx；日常发版只同步 jar/前端并重启 Java。
 
 建议同时在 `deploy/deploy.env` 填写 `SITE_ORIGIN`（如 `https://你的域名`，无末尾斜杠）。  
-发布时会自动写入 `robots.txt` / `sitemap.xml` / canonical，便于搜索引擎收录。  
+发布时会替换前端里所有 `__SITE_ORIGIN__`（robots / sitemap / canonical / og 等）。  
 上线后把 `https://你的域名/sitemap.xml` 提交到百度站长 / Google Search Console。
 
 ### 6. 本机第一次正式发布

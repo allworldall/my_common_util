@@ -1,6 +1,15 @@
 (() => {
   const $ = (id) => document.getElementById(id);
   const config = window.APP_CONFIG || {};
+
+  const MAX_IMAGES = 3;
+  const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+  const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/gif", "image/webp"]);
+
+  const pageContext = resolvePageContext();
+
+  ensureFeedbackUi();
+
   const modal = $("feedbackModal");
   const formView = $("feedbackFormView");
   const successView = $("feedbackSuccessView");
@@ -9,13 +18,100 @@
   const statusEl = $("feedbackStatus");
   const submitBtn = $("feedbackSubmit");
 
-  const MAX_IMAGES = 3;
-  const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
-  const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/gif", "image/webp"]);
-
   /** @type {Map<string, { file: File, url: string, dataBase64: string, contentType: string }>} */
   const imageStore = new Map();
   let imageSeq = 0;
+
+  function resolvePageContext() {
+    const fileName = (location.pathname.split("/").pop() || "").trim();
+    const isHome = !fileName || fileName === "index.html";
+    if (isHome) {
+      return { isHome: true, sourceTool: "", sourcePage: "首页" };
+    }
+
+    const tools = typeof window.getAllTools === "function" ? window.getAllTools() : [];
+    const matched = tools.find((t) => (t.href || "").endsWith(fileName));
+    return {
+      isHome: false,
+      sourceTool: matched ? matched.name : fileName.replace(/\.html$/, ""),
+      sourcePage: `/tools/${fileName}`,
+    };
+  }
+
+  function ensureFeedbackUi() {
+    if (!$("feedbackOpen")) {
+      const footer = document.createElement("div");
+      footer.className = "tool-page-footer";
+      footer.innerHTML =
+        `<button type="button" class="feedback-entry" id="feedbackOpen">问题反馈</button>`;
+
+      const main = document.querySelector("main.page");
+      if (main) {
+        const related = main.querySelector(".related-tools");
+        const icp = main.querySelector(".site-icp");
+        if (related) {
+          main.insertBefore(footer, related);
+        } else if (icp) {
+          main.insertBefore(footer, icp);
+        } else {
+          main.appendChild(footer);
+        }
+      }
+    }
+
+    if ($("feedbackModal")) return;
+
+    const wrap = document.createElement("div");
+    wrap.innerHTML = `
+  <div class="modal" id="feedbackModal" hidden>
+    <div class="modal-panel feedback-panel">
+      <div id="feedbackFormView">
+        <h2>问题反馈</h2>
+        <p class="feedback-guide">
+          请简单描述您遇到的问题，文字中间可直接粘贴截图，并留下任意联系方式
+          （微信 / 手机号 / 邮箱均可）。我们优化后会及时通知您，感谢支持！
+        </p>
+        <div class="field">
+          <span class="field-label">问题描述</span>
+          <div
+            id="feedbackContent"
+            class="feedback-editor"
+            contenteditable="true"
+            role="textbox"
+            aria-multiline="true"
+            data-placeholder="例如：某个工具报错、页面显示异常…（可文字描述+粘贴截图）"
+          ></div>
+        </div>
+        <label class="field">
+          <span>您的联系方式</span>
+          <input id="feedbackContact" type="text" placeholder="微信 / 手机号 / 邮箱" />
+        </label>
+        <label class="hp-field" aria-hidden="true">
+          <span>网站</span>
+          <input id="feedbackWebsite" type="text" name="website" tabindex="-1" autocomplete="off" />
+        </label>
+        <p class="status" id="feedbackStatus"></p>
+        <div class="modal-actions">
+          <button type="button" class="primary" id="feedbackSubmit">提交反馈</button>
+          <button type="button" class="ghost" id="feedbackCancel">取消</button>
+        </div>
+      </div>
+
+      <div id="feedbackSuccessView" hidden>
+        <h2>感谢您的反馈！</h2>
+        <p class="feedback-guide">
+          我们已收到您的反馈，会尽快查看处理；有进展时会通过您留下的方式联系您。
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="primary" id="feedbackDone">我知道了</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+    while (wrap.firstChild) {
+      document.body.appendChild(wrap.firstChild);
+    }
+  }
 
   function setStatus(text, type = "") {
     statusEl.textContent = text || "";
@@ -225,7 +321,7 @@
     return `提交失败(${response.status})`;
   }
 
-  // —— 工具需求弹窗 ——
+  // —— 工具需求弹窗（仅首页有入口） ——
   const toolModal = $("toolRequestModal");
   const toolFormView = $("toolRequestFormView");
   const toolSuccessView = $("toolRequestSuccessView");
@@ -234,8 +330,10 @@
   const toolContact = $("toolRequestContact");
   const toolStatus = $("toolRequestStatus");
   const toolSubmitBtn = $("toolRequestSubmit");
+  const hasToolRequest = !!(toolModal && $("toolRequestOpen"));
 
   function setToolStatus(text, type = "") {
+    if (!toolStatus) return;
     toolStatus.textContent = text || "";
     toolStatus.className = "status" + (type ? ` ${type}` : "");
   }
@@ -272,53 +370,60 @@
     if (e.target === modal) closeModal();
   });
 
-  $("toolRequestOpen").addEventListener("click", openToolModal);
-  $("toolRequestCancel").addEventListener("click", closeToolModal);
-  $("toolRequestDone").addEventListener("click", closeToolModal);
-  toolModal.addEventListener("click", (e) => {
-    if (e.target === toolModal) closeToolModal();
-  });
+  if (hasToolRequest) {
+    $("toolRequestOpen").addEventListener("click", openToolModal);
+    $("toolRequestCancel").addEventListener("click", closeToolModal);
+    $("toolRequestDone").addEventListener("click", closeToolModal);
+    toolModal.addEventListener("click", (e) => {
+      if (e.target === toolModal) closeToolModal();
+    });
 
-  toolSubmitBtn.addEventListener("click", async () => {
-    const scenario = toolScenario.value.trim();
-    const usage = toolUsage.value.trim();
-    const contact = toolContact.value.trim();
+    toolSubmitBtn.addEventListener("click", async () => {
+      const scenario = toolScenario.value.trim();
+      const usage = toolUsage.value.trim();
+      const contact = toolContact.value.trim();
 
-    if (!scenario) {
-      setToolStatus("请描述工具的使用场景", "error");
-      return;
-    }
-    if (!usage) {
-      setToolStatus("请描述大概的使用方式", "error");
-      return;
-    }
-    if (!contact) {
-      setToolStatus("请留下联系方式，方便我们进一步沟通", "error");
-      return;
-    }
-
-    toolSubmitBtn.disabled = true;
-    setToolStatus("正在提交，请稍候…");
-
-    try {
-      const res = await fetch(apiUrl("/api/feedback/tool-request"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scenario, usage, contact }),
-      });
-      if (!res.ok) {
-        throw new Error(await parseError(res));
+      if (!scenario) {
+        setToolStatus("请描述工具的使用场景", "error");
+        return;
       }
-      const data = await res.json();
-      if (data && data.success === false) {
-        throw new Error(data.message || "提交失败");
+      if (!usage) {
+        setToolStatus("请描述大概的使用方式", "error");
+        return;
       }
-      showToolSuccess();
-    } catch (err) {
-      setToolStatus(err.message || "提交失败，请稍后重试", "error");
-      toolSubmitBtn.disabled = false;
-    }
-  });
+      if (!contact) {
+        setToolStatus("请留下联系方式，方便我们进一步沟通", "error");
+        return;
+      }
+
+      toolSubmitBtn.disabled = true;
+      setToolStatus("正在提交，请稍候…");
+
+      try {
+        const res = await fetch(apiUrl("/api/feedback/tool-request"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            scenario,
+            usage,
+            contact,
+            website: ($("toolRequestWebsite")?.value || "").trim(),
+          }),
+        });
+        if (!res.ok) {
+          throw new Error(await parseError(res));
+        }
+        const data = await res.json();
+        if (data && data.success === false) {
+          throw new Error(data.message || "提交失败");
+        }
+        showToolSuccess();
+      } catch (err) {
+        setToolStatus(err.message || "提交失败，请稍后重试", "error");
+        toolSubmitBtn.disabled = false;
+      }
+    });
+  }
 
   contentEditor.addEventListener("input", syncPlaceholder);
 
@@ -379,6 +484,9 @@
           content,
           contact,
           images,
+          website: ($("feedbackWebsite")?.value || "").trim(),
+          sourceTool: pageContext.sourceTool || "",
+          sourcePage: pageContext.sourcePage || "",
         }),
       });
       if (!res.ok) {

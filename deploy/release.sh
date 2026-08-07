@@ -8,12 +8,15 @@
 #   ./deploy/release.sh prod --skip-build
 #
 # 首次上线额外建议（手动一次即可）：
-#   1) 配置 nginx（参考 deploy/nginx.conf.example）
+#   1) 配置 nginx：把 deploy/nginx.conf.example 放到 /etc/nginx/conf.d/my_common_util.conf
+#      （Alibaba Cloud Linux / RHEL 系用 conf.d，不用 sites-available/sites-enabled）
+#      然后：sudo nginx -t && sudo systemctl reload nginx
 #   2) 安装 systemd：sudo cp deploy/my-common-util.service /etc/systemd/system/ && daemon-reload && enable
 #      （unit 内需含 SPRING_PROFILES_ACTIVE=prod，加载 application-prod.yaml）
 #   3) 配置环境变量：/etc/service_env/my_common_util（参考 deploy/env.example；邮件等密钥）
 #   4) 普通用户部署：配置 sudoers（参考 deploy/sudoers.example），并把 APP_HOME 属主交给 DEPLOY_USER
 #   5) 免密手输：填写 deploy/ssh-with-pass.local.sh（从 .example 复制，不入库）
+# 说明：本脚本不修改 nginx；只打包/同步 jar+前端并 restart Java 服务。
 #
 # 说明：release.sh 的参数 prod 指「发布目标配置 deploy.env.prod」，
 #       与 Spring 运行时 profile（local/prod）不是同一概念。
@@ -197,21 +200,15 @@ cleanup_all() {
 trap cleanup_all EXIT
 cp -R "$ROOT/frontend/." "$FRONTEND_STAGE/"
 
-# 把 SEO 占位符替换成真实域名（robots / sitemap / site-config）
+# 把 SEO 占位符替换成真实域名（robots / sitemap / site-config / 各页 canonical）
 SITE_ORIGIN="${SITE_ORIGIN:-}"
 SITE_ORIGIN="${SITE_ORIGIN%/}"
 if [[ -n "$SITE_ORIGIN" ]]; then
   echo "==> SEO 域名：$SITE_ORIGIN"
-  for f in \
-    "$FRONTEND_STAGE/robots.txt" \
-    "$FRONTEND_STAGE/sitemap.xml" \
-    "$FRONTEND_STAGE/js/site-config.js"
-  do
-    if [[ -f "$f" ]]; then
-      # macOS / Linux 兼容的原地替换
-      sed "s|__SITE_ORIGIN__|${SITE_ORIGIN}|g" "$f" > "${f}.tmp" && mv "${f}.tmp" "$f"
-    fi
-  done
+  while IFS= read -r -d '' f; do
+    # macOS / Linux 兼容的原地替换
+    sed "s|__SITE_ORIGIN__|${SITE_ORIGIN}|g" "$f" > "${f}.tmp" && mv "${f}.tmp" "$f"
+  done < <(find "$FRONTEND_STAGE" -type f \( -name '*.html' -o -name '*.js' -o -name '*.txt' -o -name '*.xml' \) -print0)
 else
   echo "==> 未设置 SITE_ORIGIN，跳过 robots/sitemap 域名替换（建议在 deploy.env 配置）"
 fi

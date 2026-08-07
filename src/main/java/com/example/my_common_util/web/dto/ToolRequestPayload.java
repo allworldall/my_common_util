@@ -14,6 +14,9 @@ public class ToolRequestPayload {
     /** 联系方式 */
     private String contact;
 
+    /** 蜜罐字段：正常用户应为空；机器人填写则静默丢弃 */
+    private String website;
+
     public String getScenario() {
         return scenario;
     }
@@ -36,5 +39,13 @@ public class ToolRequestPayload {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 }

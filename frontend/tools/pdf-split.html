@@ -11,9 +11,11 @@
   <meta property="og:description" content="免费在线PDF拆分工具：上传PDF，按页码范围拆分并下载，适合截取合同、报告指定页。无需安装软件。" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="zh_CN" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;650;700&family=Source+Sans+3:wght@400;550;600&display=swap" rel="stylesheet" />
+  <link rel="canonical" href="__SITE_ORIGIN__/tools/pdf-split.html" />
+  <meta property="og:url" content="__SITE_ORIGIN__/tools/pdf-split.html" />
+  <meta property="og:image" content="__SITE_ORIGIN__/assets/og-share.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="../css/common.css" />
 </head>
 <body>
@@ -54,6 +56,22 @@
       <button id="splitBtn" class="primary" type="button" disabled>拆分并下载</button>
       <p class="status" id="status"></p>
     </section>
+
+    <section class="faq-block" aria-labelledby="pdf-split-faq">
+      <h2 id="pdf-split-faq">常见问题</h2>
+      <details open>
+        <summary>如何按页码拆分 PDF？</summary>
+        <p>上传 PDF 后填写起始页与结束页，点击「拆分并下载」即可得到该页码范围的新文件，适合截取合同、报告指定页。</p>
+      </details>
+      <details>
+        <summary>文件会上传到服务器吗？</summary>
+        <p>拆分在服务端完成处理后立即返回下载，不会做长期存储；请勿上传含高度敏感信息的文件。</p>
+      </details>
+      <details>
+        <summary>支持多大的 PDF？</summary>
+        <p>单文件建议不超过 50MB，单次拆分页数也有上限，过大文件可先压缩或分段处理。</p>
+      </details>
+    </section>
   </main>
 
   <div class="modal" id="modal" hidden>
@@ -73,6 +91,7 @@
   <script src="../js/tools-config.js"></script>
   <script src="../js/seo.js"></script>
   <script src="../js/api-config.js"></script>
+  <script src="../js/feedback.js"></script>
   <script src="./pdf-split.js"></script>
 </body>
 </html>
