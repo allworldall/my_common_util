@@ -62,6 +62,19 @@ window.TOOL_CATEGORIES = [
         },
       },
       {
+        id: "id-photo",
+        name: "证件照制作",
+        desc: "手机照转1寸/2寸",
+        href: "./tools/id-photo.html",
+        icon: "id-photo",
+        seo: {
+          title: "证件照制作 - 手机照片转1寸2寸 | ToolKit",
+          description:
+            "免费在线证件照制作：手机自拍转1寸/2寸证件照，支持白底蓝底红底，本地裁切导出，图片不上传服务器。",
+          keywords: "证件照,1寸照片,2寸照片,白底证件照,蓝底证件照,手机拍证件照,在线证件照",
+        },
+      },
+      {
         id: "image-scan",
         name: "图片扫描",
         desc: "照片转扫描件 PDF",
@@ -226,9 +239,9 @@ window.TOOL_CATEGORIES = [
 window.SITE_SEO = {
   title: "ToolKit 在线工具集 - 免费PDF拆分/压缩/Word互转/OCR/JSON等",
   description:
-    "免费在线工具箱：PDF拆分、PDF压缩、Word与PDF互转、图片压缩、图片OCR文字识别、JSON格式化、HTTP请求模拟、时间戳转换、Base64、UUID、文本Diff等。开发联调与办公处理常用，多数工具本地处理、数据不上传。",
+    "免费在线工具箱：PDF拆分、PDF压缩、Word与PDF互转、图片压缩、证件照制作、图片OCR文字识别、JSON格式化、HTTP请求模拟、时间戳转换、Base64、UUID、文本Diff等。开发联调与办公处理常用，多数工具本地处理、数据不上传。",
   keywords:
-    "在线工具,工具集,PDF拆分,PDF压缩,Word转PDF,PDF转Word,图片OCR,JSON格式化,HTTP请求,时间戳转换,Base64,UUID生成,文本对比,ToolKit",
+    "在线工具,工具集,PDF拆分,PDF压缩,Word转PDF,PDF转Word,证件照,图片OCR,JSON格式化,HTTP请求,时间戳转换,Base64,UUID生成,文本对比,ToolKit",
 };
 
 /** 扁平工具列表，便于 sitemap / 相关推荐 */

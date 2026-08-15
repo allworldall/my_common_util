@@ -1095,3 +1095,64 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 }
+
+/* 证件照制作 */
+.id-photo-editor {
+  display: grid;
+  gap: 14px;
+}
+
+.id-bg-swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.id-bg-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  flex: 0 0 auto;
+}
+
+.id-bg-keep {
+  background: conic-gradient(#d9e2ef 0 25%, #fff 0 50%, #d9e2ef 0 75%, #fff 0);
+}
+
+.id-photo-stage-wrap {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+
+.id-photo-canvas {
+  width: min(100%, 360px);
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #eef2f7;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+}
+
+.id-photo-canvas:active {
+  cursor: grabbing;
+}
+
+.id-photo-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.id-photo-result-box {
+  min-height: 220px;
+}
+
+.id-photo-result-box img {
+  max-height: 360px;
+  width: auto;
+  box-shadow: 0 4px 18px rgba(21, 32, 51, 0.12);
+}

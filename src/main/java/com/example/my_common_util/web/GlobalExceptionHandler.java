@@ -7,9 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -32,6 +35,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleMaxUpload(MaxUploadSizeExceededException ex) {
         log.warn("上传文件过大: {}", ex.getMessage());
         return error(HttpStatus.PAYLOAD_TOO_LARGE, "上传文件过大");
+    }
+
+    @ExceptionHandler({NoResourceFoundException.class, NoHandlerFoundException.class})
+    public ResponseEntity<Map<String, Object>> handleNotFound(Exception ex) {
+        log.debug("资源不存在: {}", ex.getMessage());
+        return error(HttpStatus.NOT_FOUND, "资源不存在");
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<Map<String, Object>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+        log.debug("不支持的请求方法: {}", ex.getMessage());
+        return error(HttpStatus.METHOD_NOT_ALLOWED, "不支持的请求方法");
     }
 
     @ExceptionHandler(Exception.class)

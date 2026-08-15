@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>证件照制作 - 手机照片转1寸2寸 | ToolKit</title>
+  <meta name="description" content="免费在线证件照制作：手机自拍转1寸/2寸证件照，支持白底蓝底红底，本地裁切导出，图片不上传服务器。" />
+  <meta name="keywords" content="证件照,1寸照片,2寸照片,白底证件照,蓝底证件照,手机拍证件照,在线证件照" />
+  <meta name="robots" content="index,follow" />
+  <meta property="og:title" content="证件照制作 - 手机照片转1寸2寸 | ToolKit" />
+  <meta property="og:description" content="免费在线证件照制作：手机自拍转1寸/2寸证件照，支持白底蓝底红底，本地裁切导出，图片不上传服务器。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="zh_CN" />
+  <link rel="canonical" href="__SITE_ORIGIN__/tools/id-photo.html" />
+  <meta property="og:url" content="__SITE_ORIGIN__/tools/id-photo.html" />
+  <meta property="og:image" content="__SITE_ORIGIN__/assets/og-share.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page">
+    <nav class="top-nav"><a href="../index.html">← 返回工具集</a></nav>
+    <header class="header">
+      <h1>证件照制作</h1>
+      <p>手机自拍转 1 寸 / 2 寸证件照，支持换底色，本地处理不上传</p>
+    </header>
+
+    <section class="card">
+      <div class="upload-zone" id="uploadZone">
+        <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,image/bmp,image/gif,.jpg,.jpeg,.png,.webp,.bmp,.gif" hidden />
+        <p class="upload-title">点击或拖拽照片到此处</p>
+        <p class="upload-hint" id="fileHint">支持 JPG / PNG / WEBP，手机可直接拍照上传</p>
+      </div>
+
+      <div class="meta" id="fileMeta" hidden>
+        <span id="metaName">-</span>
+        <span id="metaOrigin">原图：-</span>
+      </div>
+
+      <div id="editorPanel" class="id-photo-editor" hidden>
+        <div class="preset-block">
+          <span class="preset-label">照片规格</span>
+          <div class="preset-row" id="specRow">
+            <button type="button" class="preset is-active" data-spec="one">1寸 (25×35mm)</button>
+            <button type="button" class="preset" data-spec="two">2寸 (35×49mm)</button>
+          </div>
+        </div>
+
+        <div class="preset-block">
+          <span class="preset-label">背景颜色</span>
+          <div class="preset-row" id="bgRow">
+            <button type="button" class="preset id-bg-swatch is-active" data-bg="white" title="白底">
+              <span class="id-bg-dot" style="background:#fff;border-color:#c5d0de"></span>白底
+            </button>
+            <button type="button" class="preset id-bg-swatch" data-bg="blue" title="蓝底">
+              <span class="id-bg-dot" style="background:#438edb"></span>蓝底
+            </button>
+            <button type="button" class="preset id-bg-swatch" data-bg="red" title="红底">
+              <span class="id-bg-dot" style="background:#d92b2b"></span>红底
+            </button>
+            <button type="button" class="preset id-bg-swatch" data-bg="keep" title="保留原背景">
+              <span class="id-bg-dot id-bg-keep"></span>原背景
+            </button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="field">
+            <span>缩放（拖动画面可调整位置）</span>
+            <input id="zoom" type="range" min="100" max="300" value="100" />
+          </label>
+          <label class="field">
+            <span>换底容差（背景越花越大）</span>
+            <input id="tolerance" type="range" min="10" max="90" value="38" />
+          </label>
+        </div>
+
+        <div class="form-row">
+          <label class="field">
+            <span>目标大小上限 (KB)</span>
+            <input id="maxKb" type="number" min="20" max="1024" value="100" />
+          </label>
+          <label class="field">
+            <span>输出像素（300DPI）</span>
+            <input id="pixelInfo" type="text" value="295 × 413" readonly />
+          </label>
+        </div>
+
+        <div class="id-photo-stage-wrap">
+          <canvas id="editorCanvas" class="id-photo-canvas" width="360" height="504"></canvas>
+          <p class="id-photo-hint">拖动调整人像位置，滚轮或滑块缩放</p>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="secondary" id="autoFaceBtn">自动定位人脸</button>
+          <button type="button" class="primary" id="processBtn">生成证件照</button>
+          <button type="button" class="secondary" id="downloadBtn" disabled>下载结果</button>
+          <button type="button" class="ghost" id="clearBtn">清空</button>
+        </div>
+      </div>
+
+      <div class="split-panes" id="resultPanes" hidden>
+        <div>
+          <p class="field-label">证件照预览</p>
+          <div class="preview-box id-photo-result-box">
+            <img id="resultPreview" alt="" hidden />
+          </div>
+        </div>
+        <div>
+          <p class="field-label">结果信息</p>
+          <div class="result-box" id="resultInfo">生成后显示尺寸与文件大小</div>
+        </div>
+      </div>
+
+      <p class="status" id="status"></p>
+      <p class="note">建议：正面免冠、光线均匀、背景尽量纯色；换底对纯色墙效果更好。复杂背景可选手动裁切后选「原背景」。</p>
+    </section>
+  </main>
+  <script src="../js/site-config.js"></script>
+  <script src="../js/tools-config.js"></script>
+  <script src="../js/seo.js"></script>
+  <script src="../js/api-config.js"></script>
+  <script src="../js/feedback.js"></script>
+  <script src="./id-photo.js"></script>
+</body>
+</html>
