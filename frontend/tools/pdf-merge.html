@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>在线PDF合并 - 两个PDF按顺序合成一个 | ToolKit</title>
+  <meta name="description" content="免费在线PDF合并工具：上传两个PDF，按页面展示顺序合成一个新文件并下载。无需安装软件。" />
+  <meta name="keywords" content="PDF合并,在线PDF合并,合并PDF,两个PDF合成一个,PDF拼接" />
+  <meta name="robots" content="index,follow" />
+  <meta property="og:title" content="在线PDF合并 - 两个PDF按顺序合成一个 | ToolKit" />
+  <meta property="og:description" content="免费在线PDF合并：上传两个PDF，按先后顺序拼成一个新文件，适合把合同、报告合订。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="zh_CN" />
+  <link rel="canonical" href="__SITE_ORIGIN__/tools/pdf-merge.html" />
+  <meta property="og:url" content="__SITE_ORIGIN__/tools/pdf-merge.html" />
+  <meta property="og:image" content="__SITE_ORIGIN__/assets/og-share.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../css/common.css" />
+</head>
+<body>
+  <main class="page narrow">
+    <nav class="top-nav">
+      <a href="../index.html">← 返回工具集</a>
+    </nav>
+
+    <header class="header">
+      <h1>PDF合并</h1>
+      <p>上传两个 PDF，按上下顺序合并成一个新文件</p>
+    </header>
+
+    <section class="card">
+      <div class="merge-slots">
+        <div class="merge-slot">
+          <p class="merge-slot-label">第 1 个（在前）</p>
+          <div class="upload-zone" id="zone0">
+            <input id="fileInput0" type="file" accept="application/pdf,.pdf" hidden />
+            <p class="upload-title">点击或拖拽 PDF 到此处</p>
+            <p class="upload-hint" id="hint0">支持最大 50M</p>
+          </div>
+          <div class="meta" id="meta0" hidden>
+            <span id="metaName0">-</span>
+            <span id="metaPages0">总页数：-</span>
+            <span id="metaSize0">大小：-</span>
+          </div>
+        </div>
+
+        <div class="merge-slot">
+          <p class="merge-slot-label">第 2 个（在后）</p>
+          <div class="upload-zone" id="zone1">
+            <input id="fileInput1" type="file" accept="application/pdf,.pdf" hidden />
+            <p class="upload-title">点击或拖拽 PDF 到此处</p>
+            <p class="upload-hint" id="hint1">支持最大 50M</p>
+          </div>
+          <div class="meta" id="meta1" hidden>
+            <span id="metaName1">-</span>
+            <span id="metaPages1">总页数：-</span>
+            <span id="metaSize1">大小：-</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button id="swapBtn" class="secondary" type="button" disabled>交换顺序</button>
+        <button id="mergeBtn" class="primary" type="button" disabled>合并并下载</button>
+      </div>
+      <p class="status" id="status"></p>
+    </section>
+
+    <section class="faq-block" aria-labelledby="pdf-merge-faq">
+      <h2 id="pdf-merge-faq">常见问题</h2>
+      <details open>
+        <summary>合并后的页序是怎样的？</summary>
+        <p>上面「第 1 个」的全部页在前，下面「第 2 个」的全部页接在后面。要反过来，点「交换顺序」即可，不用重新选文件。</p>
+      </details>
+      <details>
+        <summary>能只合并其中某几页吗？</summary>
+        <p>本页按整本合并。若只要一部分页，请先用「PDF拆分」截出后再来合并。</p>
+      </details>
+      <details>
+        <summary>加密、可填写表格、目录、电子章还在吗？</summary>
+        <p>设了打开密码的 PDF 合并不了。合并只保证一页页内容按顺序拼在一起；可填写的格子、左侧目录、电子章可能没了或失效。</p>
+      </details>
+      <details>
+        <summary>文件会长期保存在服务器吗？</summary>
+        <p>处理完成后立即返回下载，不会做长期存储；请勿上传含高度敏感信息的文件。</p>
+      </details>
+      <details>
+        <summary>支持多大的 PDF？</summary>
+        <p>每个文件不超过 50MB，两个加起来最多 200 页。过大可先压缩或拆开再合。</p>
+      </details>
+    </section>
+  </main>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-panel">
+      <h2>保存合并结果</h2>
+      <p id="modalDesc">文件已生成，请选择保存位置。</p>
+      <p class="status" id="modalStatus" hidden></p>
+      <div class="modal-actions">
+        <button id="saveAsBtn" class="primary" type="button">选择位置保存</button>
+        <button id="downloadBtn" class="secondary" type="button">浏览器下载</button>
+        <button id="cancelBtn" class="ghost" type="button">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/site-config.js"></script>
+  <script src="../js/tools-config.js"></script>
+  <script src="../js/seo.js"></script>
+  <script src="../js/api-config.js"></script>
+  <script src="../js/feedback.js"></script>
+  <script src="./pdf-merge.js"></script>
+</body>
+</html>

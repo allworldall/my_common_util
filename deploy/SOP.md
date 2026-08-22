@@ -268,7 +268,7 @@ Environment=SPRING_PROFILES_ACTIVE=prod
    sudo nginx -t && sudo systemctl reload nginx
    ```
    示例配置已包含：HTTPS、www→裸域、真 404、安全响应头、`/api` 限流。  
-   **PDF 压缩**路径 `/api/pdf/compress` 单独放宽到 `client_max_body_size 110m`、超时约 200s；若服务器上是旧版 nginx 配置，发版后请同步 `nginx.conf.example` 再 `nginx -t && reload`。
+   **PDF 压缩** `/api/pdf/compress`、**PDF 合并** `/api/pdf/merge` 都单独放到 `client_max_body_size 110m`（通用 `/api/` 仍是 52m）。现网若还是旧配置，按下面 5.1 改，不要只跑 `release.sh`。
 3. 阿里云安全组放行 **TCP 80 / 443**，**不要**对公网开放 8080（Java 在 prod 绑定 `127.0.0.1`）。
 4. 大陆机房域名需完成 ICP 备案；备案通过后在 `frontend/js/site-config.js` 填写 `icp`（如 `浙ICP备xxxxxxxx号`），再发版。
 5. 验证：
@@ -281,6 +281,47 @@ Environment=SPRING_PROFILES_ACTIVE=prod
    ```
 
 `release.sh` **不会**改 Nginx；日常发版只同步 jar/前端并重启 Java。
+
+#### 5.1 上线 PDF 合并：改现网 Nginx（必做）
+
+**为什么：** 通用 `location /api/` 限制 `client_max_body_size 52m`。合并要传两个 PDF，各自最大 50MB，加起来很容易超过 52MB，请求会在网关被挡成 **413**，后端根本收不到。所以 `/api/pdf/merge` 必须单独放到 110m，并且这段 `location` 必须写在通用 `location /api/` **前面**（`^~` 前缀匹配才不会落到 52m 那条）。
+
+**怎么改（线上已有 conf、不要整文件覆盖时）：**
+
+1. SSH 上服务器，编辑现网配置：
+   ```bash
+   sudo vi /etc/nginx/conf.d/my_common_util.conf
+   ```
+2. 在 `location /api/` **之前**（建议紧挨着 `/api/pdf/compress` 后面）插入下面整段：
+
+   ```nginx
+   # 两个 PDF 合计可能超过通用 /api/ 的 52m，必须写在 location /api/ 之前
+   location ^~ /api/pdf/merge {
+       limit_req zone=api_heavy burst=3 nodelay;
+       limit_req_status 429;
+       proxy_pass http://127.0.0.1:8080;
+       proxy_set_header Host $host;
+       proxy_set_header X-Real-IP $remote_addr;
+       proxy_set_header X-Forwarded-For $remote_addr;
+       proxy_set_header X-Forwarded-Proto $scheme;
+       client_max_body_size 110m;
+       proxy_pass_header Content-Disposition;
+       proxy_read_timeout 120s;
+   }
+   ```
+
+   完整对照见仓库 `deploy/nginx.conf.example`。
+3. 检查并加载，**不要跳过 `nginx -t`**：
+   ```bash
+   sudo nginx -t && sudo systemctl reload nginx
+   ```
+4. 确认生效：
+   ```bash
+   sudo nginx -T 2>/dev/null | grep -A 12 'location ^~ /api/pdf/merge'
+   ```
+   应能看到 `client_max_body_size 110m`。
+
+**注意：** `./deploy/release.sh` 只更 jar 和前端，**不会**改这台机器上的 Nginx。PDF 合并这次上线，必须按上面人肉改一次并 reload；只发版不改 Nginx，两个较大文件合并会 413。
 
 建议同时在 `deploy/deploy.env` 填写 `SITE_ORIGIN`（如 `https://你的域名`，无末尾斜杠）。  
 发布时会替换前端里所有 `__SITE_ORIGIN__`（robots / sitemap / canonical / og 等）。  
@@ -340,7 +381,8 @@ ssh webuser@服务器 'journalctl -u my-common-util -n 100 --no-pager'
    ssh root@服务器 'systemctl daemon-reload && systemctl restart my-common-util'
    ```
 4. **本机执行**：`./deploy/release.sh`  
-5. **线上抽测**：确认 journal/start 日志为 `prod`，再测 Word↔PDF。
+5. **上线 PDF 合并时**：`release.sh` 不会改 Nginx，还要按 **5.1** 给现网加上 `/api/pdf/merge` 的 110m，再 `nginx -t && reload`。  
+6. **线上抽测**：确认 journal/start 日志为 `prod`；再测拆分 / 合并 / 压缩。两个合计超过 52MB 的文件应能合并，而不是 413。
 
 ---
 
@@ -369,3 +411,6 @@ A：看启动输出 `Starting with spring.profiles.active=prod`，或 `journalct
 
 **Q：`release.sh prod` 和 Spring 的 `prod` 一样吗？**  
 A：不一样。`release.sh prod` 读的是 `deploy/deploy.env.prod`（发布到哪台机器）；Spring `prod` 是应用运行配置（`application-prod.yaml`）。
+
+**Q：PDF 合并两个较大文件报 413？**  
+A：几乎一定是现网 Nginx 还走通用 `/api/` 的 52m。按 **5.1** 加上 `/api/pdf/merge` 的 110m 后 `sudo nginx -t && sudo systemctl reload nginx`。`release.sh` 不会改 Nginx。

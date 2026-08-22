@@ -432,6 +432,27 @@ textarea {
   font-size: 0.9rem;
 }
 
+.merge-slots {
+  display: grid;
+  gap: 16px;
+}
+
+.merge-slot {
+  display: grid;
+  gap: 10px;
+}
+
+.merge-slot-label {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.merge-slot .upload-zone {
+  padding: 20px 16px;
+}
+
 .meta {
   display: flex;
   flex-wrap: wrap;

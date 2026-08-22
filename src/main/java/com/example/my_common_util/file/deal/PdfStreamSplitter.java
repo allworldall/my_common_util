@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.itextpdf.text.Document;
+import com.itextpdf.text.exceptions.BadPasswordException;
 import com.itextpdf.text.pdf.PdfCopy;
 import com.itextpdf.text.pdf.PdfReader;
 
@@ -70,13 +71,39 @@ public final class PdfStreamSplitter {
     public static int getPageCount(InputStream inputStream) throws IOException {
         PdfReader reader = null;
         try {
-            reader = new PdfReader(inputStream);
+            reader = openUnencryptedReader(inputStream);
             return reader.getNumberOfPages();
         } finally {
             if (reader != null) {
                 reader.close();
             }
         }
+    }
+
+    private static final String ENCRYPTED_MESSAGE = "不支持加密的 PDF";
+
+    private static PdfReader openUnencryptedReader(InputStream inputStream) throws IOException {
+        PdfReader reader;
+        try {
+            reader = new PdfReader(inputStream);
+        } catch (BadPasswordException e) {
+            throw new IllegalArgumentException(ENCRYPTED_MESSAGE);
+        } catch (NoClassDefFoundError e) {
+            if (e.getMessage() != null && e.getMessage().contains("bouncycastle")) {
+                throw new IllegalArgumentException(ENCRYPTED_MESSAGE);
+            }
+            throw e;
+        } catch (IOException e) {
+            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("password")) {
+                throw new IllegalArgumentException(ENCRYPTED_MESSAGE);
+            }
+            throw e;
+        }
+        if (reader.isEncrypted()) {
+            reader.close();
+            throw new IllegalArgumentException(ENCRYPTED_MESSAGE);
+        }
+        return reader;
     }
 
     private static void validatePageRange(int startPage, int endPage) {

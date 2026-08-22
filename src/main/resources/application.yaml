@@ -49,6 +49,9 @@ pdf:
     rate-limit-per-minute: 4
     timeout-seconds: 180
     gs-path: ""                    # 空则自动探测；具体路径见 application-prod.yaml
+  merge:
+    max-file-size-bytes: 52428800   # 50MB，单文件
+    max-total-pages: 200            # 两文件合计
 
 # Word ↔ PDF
 # - Word→PDF：LibreOffice

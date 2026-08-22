@@ -94,6 +94,20 @@ server {
         proxy_read_timeout 200s;
     }
 
+    # 两个 PDF 合计可能超过通用 /api/ 的 52m，必须写在 location /api/ 之前
+    location ^~ /api/pdf/merge {
+        limit_req zone=api_heavy burst=3 nodelay;
+        limit_req_status 429;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 110m;
+        proxy_pass_header Content-Disposition;
+        proxy_read_timeout 120s;
+    }
+
     location ^~ /api/feedback {
         limit_req zone=api_feedback burst=2 nodelay;
         limit_req_status 429;

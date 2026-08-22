@@ -23,6 +23,19 @@ window.TOOL_CATEGORIES = [
         },
       },
       {
+        id: "pdf-merge",
+        name: "PDF合并",
+        desc: "将两个 PDF 按顺序合成一个",
+        href: "./tools/pdf-merge.html",
+        icon: "pdf-merge",
+        seo: {
+          title: "在线PDF合并 - 两个PDF按顺序合成一个 | ToolKit",
+          description:
+            "免费在线PDF合并工具：上传两个PDF，按页面展示顺序合成一个新文件并下载。无需安装软件。",
+          keywords: "PDF合并,在线PDF合并,合并PDF,两个PDF合成一个,PDF拼接",
+        },
+      },
+      {
         id: "pdf-compress",
         name: "PDF压缩",
         desc: "三档质量缩小 PDF 体积",
@@ -237,11 +250,11 @@ window.TOOL_CATEGORIES = [
 
 /** 首页 SEO（与 index.html meta 保持一致） */
 window.SITE_SEO = {
-  title: "ToolKit 在线工具集 - 免费PDF拆分/压缩/Word互转/OCR/JSON等",
+  title: "ToolKit 在线工具集 - 免费PDF拆分/合并/压缩/Word互转/OCR/JSON等",
   description:
-    "免费在线工具箱：PDF拆分、PDF压缩、Word与PDF互转、图片压缩、证件照制作、图片OCR文字识别、JSON格式化、HTTP请求模拟、时间戳转换、Base64、UUID、文本Diff等。开发联调与办公处理常用，多数工具本地处理、数据不上传。",
+    "免费在线工具箱：PDF拆分、PDF合并、PDF压缩、Word与PDF互转、图片压缩、证件照制作、图片OCR文字识别、JSON格式化、HTTP请求模拟、时间戳转换、Base64、UUID、文本Diff等。开发联调与办公处理常用，多数工具本地处理、数据不上传。",
   keywords:
-    "在线工具,工具集,PDF拆分,PDF压缩,Word转PDF,PDF转Word,证件照,图片OCR,JSON格式化,HTTP请求,时间戳转换,Base64,UUID生成,文本对比,ToolKit",
+    "在线工具,工具集,PDF拆分,PDF合并,PDF压缩,Word转PDF,PDF转Word,证件照,图片OCR,JSON格式化,HTTP请求,时间戳转换,Base64,UUID生成,文本对比,ToolKit",
 };
 
 /** 扁平工具列表，便于 sitemap / 相关推荐 */
